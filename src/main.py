@@ -11,8 +11,9 @@ def exp(exp_name, R, U, V, SN_FILE, steps, bound):
     alpha = 0.0002
     lamb  = 0.002
     beta  = 0.001
+    L_C = 0.1
+    f_result = open('../resultSet/' + exp_name + '_' +'Steps : ' + `steps`+ 'Alpha : ' + `alpha`+'Lambda: ' + `lamb`+ 'Beta  : ' + `beta`+ 'L_C  : ' + `L_C`, 'w')
 
-    f_result = open('../dataset/result_gd_x_gdsr_' + exp_name, 'w')
     print('Steps : ' + `steps` + '\n')
     print('Alpha : ' + `alpha` + '\n')
     print('Lambda: ' + `lamb` + '\n')
@@ -42,7 +43,7 @@ def exp(exp_name, R, U, V, SN_FILE, steps, bound):
     print '******************* FINISH SGD *******************'
 
     print '******************* SGD_kNN BEGIN *******************'
-    L_C = 0.1
+
     U2 = numpy.copy(U)
     V2 = numpy.copy(V)
 
