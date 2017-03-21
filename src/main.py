@@ -20,15 +20,18 @@ def exp(exp_name, R, U, V, SN_FILE):
                     for beta in Beta:
                         for L_C in L_CRatio:
                             f_result = open('../resultSet/' + exp_name + '_' +'Steps_' + `steps`+ 'Alpha_' + `alpha`+'Lambda_' + `lamb`+ 'Beta_' + `beta`+ 'L_C_' + `L_C`+ 'Bound_' + `bound`, 'w')
-
+                            print('bound : ' + `bound` + '\n')
                             print('Steps : ' + `steps` + '\n')
                             print('Alpha : ' + `alpha` + '\n')
                             print('Lambda: ' + `lamb` + '\n')
                             print('Beta  : ' + `beta` + '\n')
+                            print('L_C : ' + `L_C` + '\n')
+                            f_result.write('bound : ' + `bound` + '\n')
                             f_result.write('Steps : '+`steps`+'\n')
                             f_result.write('Alpha : '+`alpha`+'\n')
                             f_result.write('Lambda: '+`lamb`+'\n')
                             f_result.write('Beta  : '+`beta`+'\n')
+                            f_result.write('L_C : ' + `L_C` + '\n')
                             print '******************* SR *******************'
                             print '******************* SGD BEGIN *******************'
 
@@ -63,12 +66,12 @@ def exp(exp_name, R, U, V, SN_FILE):
 
                             time_exp2 = (time.time() - start_time) / 60
 
-                            f_result.write('SGD: ' + `exp2` + '\n')
+                            f_result.write('SGD_kNN: ' + `exp2` + '\n')
                             f_result.write('time  : ' + `time_exp2` + '\n')
                             f_result.write('k :' + `numNeighbors` + '\n')
 
                             print('k :' + `numNeighbors` + '\n')
-                            print('SGD: ' + `exp2` + '\n')
+                            print('SGD_kNN: ' + `exp2` + '\n')
                             print('time  : ' + `time_exp2` + '\n')
                             print '******************* FINISH SGD_kNN *******************'
                         print '******************* FINISH L_C *******************'
