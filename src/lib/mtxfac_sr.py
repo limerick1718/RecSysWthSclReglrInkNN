@@ -77,17 +77,18 @@ def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_
         numNeighbors[i] = k
 
         for j in xrange(len(social_graph[i])):
-            alpha = lamda - L_C * social_graph
-            alpha[alpha < 0.] = 0.
-            # temp = lamda - L_C * social_graph[i, j]
-            # if temp > 0 :
-            #     alpha[i, j] = float(temp)
-            # else:
-            #     alpha[i, j] = 0.0
+            # alpha = lamda - L_C * social_graph
+            # alpha[alpha < 0.] = 0.
+            temp = lamda - L_C * social_graph[i, j]
+            if temp > 0 :
+                alpha[i, j] = float(temp)
+            else:
+                alpha[i, j] = 0.0
             # alphaTemp[i, j] = numpy.max(0, lamda - L_C * social_graph[i, j])
         summition = numpy.sum(alpha[i, :])
         for j in xrange(len(social_graph[i])):
-            alpha[i, j] = alpha[i, j]/ summition
+            if summition != 0:
+                alpha[i, j] = alpha[i, j]/ summition
         # alpha[i, :] = [numpy.max(0, lamda - L_C * social_graph[i, j]) for j in range(len(social_graph[i]))]
         # alpha[i, :] = alpha[i, :] / numpy.sum(alpha[i, :])
 
@@ -227,7 +228,7 @@ def sr_f1(i, P, SG, weightVector, k):
 
     for f in xrange(int(k)):
         if SG[i][sortIndex[f]] > 0:
-            if ~isnan(weightVector[sortIndex[f]]):
+            if not isnan(weightVector[sortIndex[f]]):
                 reg += SG[i][sortIndex[f]] * (P[i] - P[sortIndex[f]]) * weightVector[sortIndex[f]]
 
     return reg

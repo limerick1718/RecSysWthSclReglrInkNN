@@ -13,7 +13,7 @@ def exp(exp_name, R, SN_FILE):
     rowNumber = 0
 
     Bound = [60]
-    Step = [100]
+    Step = [500]
     Alpha = [0.001]
     Lamb  = [0.01]
     Beta  = [0.001]
@@ -35,8 +35,8 @@ def exp(exp_name, R, SN_FILE):
 
     date = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     SG = mtxfac_sr.load_grafo_social_for_anotherDataSet(R, SN_FILE)
-    U = random.random(size=(3000, 12000))
-    V = random.random(size=(20000, 12000))
+    U = random.randint(0,10,size=(3000, 12000))
+    V = random.randint(0,10,size=(20000, 12000))
     for bound in Bound:
         # list_index, validation_index = mtxfac.load_matrix_index(R, bound)
         list_index, validation_index, newR = mtxfac.load_matrix_index_for_anotherDataSet(R, bound)
@@ -76,21 +76,21 @@ def exp(exp_name, R, SN_FILE):
                             V1 = numpy.copy(V2)
                             start_time = time.time()
 
-                            # nP1, nQ1 = mtxfac_sr.gd_default(newR, U1, V1, SG, steps, alpha, lamb, beta, list_index)
-                            #
-                            # time_exp1 = (time.time() - start_time) / 60
-                            #
-                            # exp1 = mtxfac_sr.val(validation_index, newR, nP1, nQ1)
-                            #
-                            # f_result.write('SGD: ' + `exp1` + '\n')
-                            # f_result.write('time  : ' + `time_exp1` + '\n')
-                            #
-                            # ws.write(rowNumber, 7, exp1)
-                            # ws.write(rowNumber, 8, time_exp1)
-                            #
-                            # print('SGD: ' + `exp1` + '\n')
-                            # print('time  : ' + `time_exp1` + '\n')
-                            # print '******************* FINISH SGD *******************'
+                            nP1, nQ1 = mtxfac_sr.gd_default(newR, U1, V1, SG, steps, alpha, lamb, beta, list_index)
+
+                            time_exp1 = (time.time() - start_time) / 60
+
+                            exp1 = mtxfac_sr.val(validation_index, newR, nP1, nQ1)
+
+                            f_result.write('SGD: ' + `exp1` + '\n')
+                            f_result.write('time  : ' + `time_exp1` + '\n')
+
+                            ws.write(rowNumber, 7, exp1)
+                            ws.write(rowNumber, 8, time_exp1)
+
+                            print('SGD: ' + `exp1` + '\n')
+                            print('time  : ' + `time_exp1` + '\n')
+                            print '******************* FINISH SGD *******************'
 
                             print '******************* SGD_kNN BEGIN *******************'
 
@@ -131,11 +131,11 @@ if __name__ == "__main__":
 
     '************************ EXP GD x GDRS ***************************'
 
-    R = numpy.loadtxt(open("C:/Users/aluck/Desktop/hetrec2011-lastfm-2k/user_artists", "rb"), delimiter='\t')
+    R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
     R = numpy.array(R)
     # U = numpy.loadtxt(open("../dataset/NY_U", "rb"), delimiter=",")
     # V = numpy.loadtxt(open("../dataset/NY_V", "rb"), delimiter=",")
-    SN_FILE = 'C:/Users/aluck/Desktop/hetrec2011-lastfm-2k/user_friends'
+    SN_FILE = '../dataset/user_friends'
 
     exp('NY', R, SN_FILE)
 
