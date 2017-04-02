@@ -25,7 +25,7 @@ def load_matrix_index_for_anotherDataSet(R, bound):
     for i in xrange(len(R)):
         x = R[i][0]
         y = R[i][1]
-        value = R[i][2]
+        value = R[i][2]/10000
         newR[x][y] = value
         randNumber = numpy.random.randint(0, 100)
         if randNumber <= bound:

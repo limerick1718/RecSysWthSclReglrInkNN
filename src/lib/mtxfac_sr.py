@@ -93,26 +93,34 @@ def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_
         # alpha[i, :] = alpha[i, :] / numpy.sum(alpha[i, :])
 
     for step in xrange(steps):
-
+        rmse = 0
+        T = 0
         for index in xrange(len_list_index):
             sI, sJ = list_index[index].split(',')
 
             i = int(float(sI))
             j = int(float(sJ))
 
-            UT = U[i]
-            VT = V[j].T
+            UT = U[i].T
+            VT = V[j]
             RT = R[i][j]
             e = numpy.dot(UT, VT) - RT
             u_temp = U[i] - stepLength * (
             (e * V[j]) + (lamb * U[i]) + betaParam * sr_f1(i, U, social_graph, alpha[i, :], numNeighbors[i]))
             V[j] = V[j] - stepLength * ((e * U[i]) + (lamb * V[j]))
             U[i] = u_temp
-
+            T += 1
+            rmse += e ** 2
+        current_percent = util.calc_progress(steps, step + 1, current_percent)
+        # if step % 100 == 0:
+        #     print numpy.sqrt(rmse/T)
         current_percent = util.calc_progress(steps, step + 1, current_percent)
 
         if (current_percent != percent):
+
+            print "************************"
             print current_percent
+            print numpy.sqrt(rmse/T)
             percent = current_percent
 
     return U, V, numNeighbors
@@ -241,19 +249,25 @@ def gd_default(R, U, V, social_graph, steps, alpha, lamb, beta, list_index):
     len_list_index = len(list_index)
 
     for step in xrange(steps):
-
+        rmse = 0
+        T = 0
         for index in xrange(len_list_index):
             sI, sJ = list_index[index].split(',')
 
             i = int(float(sI))
             j = int(float(sJ))
 
-            e = numpy.dot(U[i], V[j].T) - R[i][j]
+            e = numpy.dot(U[i].T, V[j]) - R[i][j]
             u_temp = U[i] - alpha * ((e * V[j]) + (lamb * U[i]) + beta * sr_f(i, U, social_graph))
             V[j] = V[j] - alpha * ((e * U[i]) + (lamb * V[j]))
             U[i] = u_temp
+            T += 1
+            rmse += e ** 2
 
+        if step % 100 == 0:
+            print numpy.sqrt(rmse/T)
         current_percent = util.calc_progress(steps, step + 1, current_percent)
+
 
         if (current_percent != percent):
             print current_percent
