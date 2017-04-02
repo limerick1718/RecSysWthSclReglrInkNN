@@ -118,7 +118,7 @@ def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_
 
         if (current_percent != percent):
 
-            print "************************"
+            print "***********SGD KNN*************"
             print current_percent
             print numpy.sqrt(rmse/T)
             percent = current_percent
@@ -264,13 +264,14 @@ def gd_default(R, U, V, social_graph, steps, alpha, lamb, beta, list_index):
             T += 1
             rmse += e ** 2
 
-        if step % 100 == 0:
-            print numpy.sqrt(rmse/T)
+
         current_percent = util.calc_progress(steps, step + 1, current_percent)
 
 
         if (current_percent != percent):
             print current_percent
+            print numpy.sqrt(rmse / T)
+            print "**************SGD*******************"
             percent = current_percent
 
     return U, V
