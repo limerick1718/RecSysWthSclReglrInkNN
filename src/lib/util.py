@@ -41,8 +41,10 @@ def pearson(x, y):
         diffprod += xdiff * ydiff
         xdiff2 += xdiff * xdiff
         ydiff2 += ydiff * ydiff
-
-    sim = diffprod / math.sqrt(xdiff2 * ydiff2)
+    if math.sqrt(xdiff2 * ydiff2) != 0:
+        sim = diffprod / math.sqrt(xdiff2 * ydiff2)
+    else:
+        sim = 0
 
     if math.isnan(sim):
         sim = 0

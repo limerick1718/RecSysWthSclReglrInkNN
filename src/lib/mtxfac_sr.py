@@ -14,8 +14,8 @@ def load_grafo_social(R, SN_FILE):
     social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=",")
 
     for i in xrange(len(social_network)):
-        user = social_network[i][0]
-        friend = social_network[i][1]
+        user = int(float(social_network[i][0]))
+        friend = int(float(social_network[i][1]))
 
         x = R[user]
         y = R[friend]
@@ -65,16 +65,27 @@ def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_
         beta = [L_C * social_graph[i][j] for j in sortIndex]
         beta.append(10 ** 6)
         beta.insert(0, 0)
-        lamda = beta[0] + 1
+        lamda = beta[1] + 1.0
         k = 0
         Sum_beta = 0
         Sum_beta_square = 0
-        while lamda > beta[k + 1] and k < len(beta) - 1:
+        now = beta[k + 1]
+        lenBe = len(beta)
+        while lamda > now and k < lenBe - 1:
             k += 1
             Sum_beta += beta[k]
+            # print Sum_beta
             Sum_beta_square += (beta[k]) ** 2
-            lamda = (1 / k) * (Sum_beta + numpy.sqrt(k + Sum_beta ** 2 - k * Sum_beta_square))
-        numNeighbors[i] = k
+            # print Sum_beta_square
+            Squrt = numpy.sqrt(k + Sum_beta ** 2 - k * Sum_beta_square)
+            # print Squrt
+            lamda = (float)(1.0 / k) * (Sum_beta + Squrt)
+            # print lamda
+        numNeighbors[i] = k - 1
+        # if lamda == 0:
+        #     numNeighbors[i] = lenBe - 2
+        # else:
+        #     numNeighbors[i] = k - 1
 
         for j in xrange(len(social_graph[i])):
             # alpha = lamda - L_C * social_graph
@@ -258,8 +269,10 @@ def gd_default(R, U, V, social_graph, steps, alpha, lamb, beta, list_index):
             j = int(float(sJ))
 
             e = numpy.dot(U[i].T, V[j]) - R[i][j]
+            # print e
             u_temp = U[i] - alpha * ((e * V[j]) + (lamb * U[i]) + beta * sr_f(i, U, social_graph))
             V[j] = V[j] - alpha * ((e * U[i]) + (lamb * V[j]))
+            # print U[i] == u_temp
             U[i] = u_temp
             T += 1
             rmse += e ** 2
