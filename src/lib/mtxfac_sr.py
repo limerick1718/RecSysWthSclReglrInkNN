@@ -53,12 +53,8 @@ def load_grafo_social_for_anotherDataSet(R, SN_FILE):
 
     return social_graph
 
-def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_index):
-    percent = 0
-    current_percent = 0
-    len_list_index = len(list_index)
+def kNN(social_graph, L_C):
     numNeighbors = numpy.zeros(len(social_graph))
-    # alphaTemp = numpy.zeros((len(social_graph), len(social_graph[1])))
     alpha = numpy.zeros((len(social_graph), len(social_graph[1])))
     for i in xrange(len(social_graph)):
         sortIndex = numpy.argsort(social_graph[i])
@@ -74,34 +70,30 @@ def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_
         while lamda > now and k < lenBe - 1:
             k += 1
             Sum_beta += beta[k]
-            # print Sum_beta
             Sum_beta_square += (beta[k]) ** 2
-            # print Sum_beta_square
             Squrt = numpy.sqrt(k + Sum_beta ** 2 - k * Sum_beta_square)
-            # print Squrt
             lamda = (float)(1.0 / k) * (Sum_beta + Squrt)
-            # print lamda
         numNeighbors[i] = k - 1
-        # if lamda == 0:
-        #     numNeighbors[i] = lenBe - 2
-        # else:
-        #     numNeighbors[i] = k - 1
 
         for j in xrange(len(social_graph[i])):
-            # alpha = lamda - L_C * social_graph
-            # alpha[alpha < 0.] = 0.
+
             temp = lamda - L_C * social_graph[i, j]
-            if temp > 0 :
+            if temp > 0:
                 alpha[i, j] = float(temp)
             else:
                 alpha[i, j] = 0.0
-            # alphaTemp[i, j] = numpy.max(0, lamda - L_C * social_graph[i, j])
         summition = numpy.sum(alpha[i, :])
         for j in xrange(len(social_graph[i])):
             if summition != 0:
-                alpha[i, j] = alpha[i, j]/ summition
-        # alpha[i, :] = [numpy.max(0, lamda - L_C * social_graph[i, j]) for j in range(len(social_graph[i]))]
-        # alpha[i, :] = alpha[i, :] / numpy.sum(alpha[i, :])
+                alpha[i, j] = alpha[i, j] / summition
+        print "***********SGD KNN*************"
+        print L_C
+        return alpha, numNeighbors
+
+def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, numNeighbors, list_index, alpha):
+    percent = 0
+    current_percent = 0
+    len_list_index = len(list_index)
 
     for step in xrange(steps):
         rmse = 0
@@ -129,7 +121,7 @@ def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_
 
         if (current_percent != percent):
 
-            print "***********SGD KNN*************"
+
             print current_percent
             print numpy.sqrt(rmse/T)
             percent = current_percent

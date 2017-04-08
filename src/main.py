@@ -40,25 +40,25 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
         SG = mtxfac_sr.load_grafo_social_for_anotherDataSet(R, SN_FILE)
 
 
-    # U1 = numpy.copy(U)
-    # # U2 = numpy.copy(U)
-    # U3 = numpy.copy(U)
-    # # U4 = numpy.copy(U)
-    # U5 = numpy.copy(U)
-    # # U6 = numpy.copy(U)
-    # U7 = numpy.copy(U)
-    # # U8 = numpy.copy(U)
-    # U9 = numpy.copy(U)
+    U1 = numpy.copy(U)
+    # U2 = numpy.copy(U)
+    U3 = numpy.copy(U)
+    # U4 = numpy.copy(U)
+    U5 = numpy.copy(U)
+    # U6 = numpy.copy(U)
+    U7 = numpy.copy(U)
+    # U8 = numpy.copy(U)
+    U9 = numpy.copy(U)
     U10 = numpy.copy(U)
-    # V1 = numpy.copy(V)
-    # # V2 = numpy.copy(V)
-    # V3 = numpy.copy(V)
-    # # V4 = numpy.copy(V)
-    # V5 = numpy.copy(V)
-    # # V6 = numpy.copy(V)
-    # V7 = numpy.copy(V)
-    # # V8 = numpy.copy(V)
-    # V9 = numpy.copy(V)
+    V1 = numpy.copy(V)
+    # V2 = numpy.copy(V)
+    V3 = numpy.copy(V)
+    # V4 = numpy.copy(V)
+    V5 = numpy.copy(V)
+    # V6 = numpy.copy(V)
+    V7 = numpy.copy(V)
+    # V8 = numpy.copy(V)
+    V9 = numpy.copy(V)
     V10 = numpy.copy(V)
 
     for bound in Bound:
@@ -93,25 +93,25 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             ws.write(rowNumber, 5, beta)
                             # ws.write(rowNumber, 6, L_C)
                             print '******************* SR *******************'
-                            # print '******************* SGD BEGIN *******************'
-                            #
-                            # start_time = time.time()
-                            #
-                            # nP1, nQ1 = mtxfac_sr.gd_default(R, U1, V1, SG, 50, alpha, lamb, beta, list_index)
-                            #
-                            # time_exp1 = (time.time() - start_time) / 60
-                            #
-                            # exp1 = mtxfac_sr.val(validation_index, R, nP1, nQ1)
-                            #
-                            # f_result.write('SGD: ' + `exp1` + '\n')
-                            # f_result.write('time  : ' + `time_exp1` + '\n')
-                            #
-                            # ws.write(rowNumber, 7, exp1)
-                            # ws.write(rowNumber, 8, time_exp1)
-                            #
-                            # print('SGD: ' + `exp1` + '\n')
-                            # print('time  : ' + `time_exp1` + '\n')
-                            # print '******************* FINISH SGD *******************'
+                            print '******************* SGD BEGIN *******************'
+
+                            start_time = time.time()
+
+                            nP1, nQ1 = mtxfac_sr.gd_default(R, U1, V1, SG, 50, alpha, lamb, beta, list_index)
+
+                            time_exp1 = (time.time() - start_time) / 60
+
+                            exp1 = mtxfac_sr.val(validation_index, R, nP1, nQ1)
+
+                            f_result.write('SGD: ' + `exp1` + '\n')
+                            f_result.write('time  : ' + `time_exp1` + '\n')
+
+                            ws.write(rowNumber, 7, exp1)
+                            ws.write(rowNumber, 8, time_exp1)
+
+                            print('SGD: ' + `exp1` + '\n')
+                            print('time  : ' + `time_exp1` + '\n')
+                            print '******************* FINISH SGD *******************'
 
                             # print '******************* SGD_kNN BEGIN *******************'
                             # L_C = 0.001
@@ -149,39 +149,41 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # print('time  : ' + `time_exp2` + '\n')
                             # print '******************* FINISH SGD_kNN *******************'
 
-                            # print '******************* SGD_kNN BEGIN *******************'
-                            # L_C = 0.005
-                            # f_result.write('L_C : ' + `L_C` + '\n')
-                            # rowNumber = rowNumber + 1
-                            # ws.write(rowNumber, 0, rowNumber)
-                            # ws.write(rowNumber, 1, bound)
-                            # ws.write(rowNumber, 2, steps)
-                            # ws.write(rowNumber, 3, alpha)
-                            # ws.write(rowNumber, 4, lamb)
-                            # ws.write(rowNumber, 5, beta)
-                            # ws.write(rowNumber, 6, L_C)
-                            # start_time = time.time()
-                            #
-                            # nP3, nQ3, numNeighbors = mtxfac_sr.gd_kNN(R, U3, V3, SG, 50, alpha, lamb, beta, L_C, list_index)
-                            #
-                            # time_exp3 = (time.time() - start_time) / 60
-                            #
-                            # exp3=mtxfac_sr.val(validation_index,R, nP3, nQ3)
-                            #
-                            # f_result.write('SGD_kNN: ' + `exp3` + '\n')
-                            # f_result.write('time  : ' + `time_exp3` + '\n')
-                            # f_result.write('k :' + `numNeighbors` + '\n')
-                            #
-                            # ws.write(rowNumber, 9, exp3)
-                            # ws.write(rowNumber, 10, time_exp3)
-                            # # lenOfNeighbor = len(numNeighbors)
-                            # # for i in xrange(lenOfNeighbor):
-                            # #     ws.write(rowNumber, 11 + i, numNeighbors[i])
-                            #
-                            # print('k :' + `numNeighbors` + '\n')
-                            # print('SGD_kNN: ' + `exp3` + '\n')
-                            # print('time  : ' + `time_exp3` + '\n')
-                            # print '******************* FINISH SGD_kNN *******************'
+                            print '******************* SGD_kNN BEGIN *******************'
+                            L_C = 0.5
+                            f_result.write('L_C : ' + `L_C` + '\n')
+                            rowNumber = rowNumber + 1
+                            ws.write(rowNumber, 0, rowNumber)
+                            ws.write(rowNumber, 1, bound)
+                            ws.write(rowNumber, 2, steps)
+                            ws.write(rowNumber, 3, alpha)
+                            ws.write(rowNumber, 4, lamb)
+                            ws.write(rowNumber, 5, beta)
+                            ws.write(rowNumber, 6, L_C)
+                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            start_time = time.time()
+
+                            nP3, nQ3, numNeighbors = mtxfac_sr.gd_kNN(R, U3, V3, SG, 50, alpha, lamb, beta, numNeighbors,
+                                                                      list_index, weightVector)
+
+                            time_exp3 = (time.time() - start_time) / 60
+
+                            exp3=mtxfac_sr.val(validation_index,R, nP3, nQ3)
+
+                            f_result.write('SGD_kNN: ' + `exp3` + '\n')
+                            f_result.write('time  : ' + `time_exp3` + '\n')
+                            f_result.write('k :' + `numNeighbors` + '\n')
+
+                            ws.write(rowNumber, 9, exp3)
+                            ws.write(rowNumber, 10, time_exp3)
+                            # lenOfNeighbor = len(numNeighbors)
+                            # for i in xrange(lenOfNeighbor):
+                            #     ws.write(rowNumber, 11 + i, numNeighbors[i])
+
+                            print('k :' + `numNeighbors` + '\n')
+                            print('SGD_kNN: ' + `exp3` + '\n')
+                            print('time  : ' + `time_exp3` + '\n')
+                            print '******************* FINISH SGD_kNN *******************'
                             #
                             # # print '******************* SGD_kNN BEGIN *******************'
                             # # L_C = 0.01
@@ -217,39 +219,41 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # # print('time  : ' + `time_exp4` + '\n')
                             # # print '******************* FINISH SGD_kNN *******************'
                             #
-                            # print '******************* SGD_kNN BEGIN *******************'
-                            # L_C = 0.05
-                            # f_result.write('L_C : ' + `L_C` + '\n')
-                            # rowNumber = rowNumber + 1
-                            # ws.write(rowNumber, 0, rowNumber)
-                            # ws.write(rowNumber, 1, bound)
-                            # ws.write(rowNumber, 2, steps)
-                            # ws.write(rowNumber, 3, alpha)
-                            # ws.write(rowNumber, 4, lamb)
-                            # ws.write(rowNumber, 5, beta)
-                            # ws.write(rowNumber, 6, L_C)
-                            # start_time = time.time()
-                            #
-                            # nP5, nQ5, numNeighbors = mtxfac_sr.gd_kNN(R, U5, V5, SG, 50, alpha, lamb, beta, L_C, list_index)
-                            #
-                            # time_exp5 = (time.time() - start_time) / 60
-                            #
-                            # exp5=mtxfac_sr.val(validation_index,R, nP5, nQ5)
-                            #
-                            # f_result.write('SGD_kNN: ' + `exp5` + '\n')
-                            # f_result.write('time  : ' + `time_exp5` + '\n')
-                            # f_result.write('k :' + `numNeighbors` + '\n')
-                            #
-                            # ws.write(rowNumber, 9, exp5)
-                            # ws.write(rowNumber, 10, time_exp5)
-                            # # lenOfNeighbor = len(numNeighbors)
-                            # # for i in xrange(lenOfNeighbor):
-                            # #     ws.write(rowNumber, 11 + i, numNeighbors[i])
-                            #
-                            # print('k :' + `numNeighbors` + '\n')
-                            # print('SGD_kNN: ' + `exp5` + '\n')
-                            # print('time  : ' + `time_exp5` + '\n')
-                            # print '******************* FINISH SGD_kNN *******************'
+                            print '******************* SGD_kNN BEGIN *******************'
+                            L_C = 1
+                            f_result.write('L_C : ' + `L_C` + '\n')
+                            rowNumber = rowNumber + 1
+                            ws.write(rowNumber, 0, rowNumber)
+                            ws.write(rowNumber, 1, bound)
+                            ws.write(rowNumber, 2, steps)
+                            ws.write(rowNumber, 3, alpha)
+                            ws.write(rowNumber, 4, lamb)
+                            ws.write(rowNumber, 5, beta)
+                            ws.write(rowNumber, 6, L_C)
+                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            start_time = time.time()
+
+                            nP5, nQ5, numNeighbors = mtxfac_sr.gd_kNN(R, U5, V5, SG, 50, alpha, lamb, beta, numNeighbors,
+                                                                      list_index, weightVector)
+
+                            time_exp5 = (time.time() - start_time) / 60
+
+                            exp5=mtxfac_sr.val(validation_index,R, nP5, nQ5)
+
+                            f_result.write('SGD_kNN: ' + `exp5` + '\n')
+                            f_result.write('time  : ' + `time_exp5` + '\n')
+                            f_result.write('k :' + `numNeighbors` + '\n')
+
+                            ws.write(rowNumber, 9, exp5)
+                            ws.write(rowNumber, 10, time_exp5)
+                            # lenOfNeighbor = len(numNeighbors)
+                            # for i in xrange(lenOfNeighbor):
+                            #     ws.write(rowNumber, 11 + i, numNeighbors[i])
+
+                            print('k :' + `numNeighbors` + '\n')
+                            print('SGD_kNN: ' + `exp5` + '\n')
+                            print('time  : ' + `time_exp5` + '\n')
+                            print '******************* FINISH SGD_kNN *******************'
                             #
                             # # print '******************* SGD_kNN BEGIN *******************'
                             # # L_C = 0.1
@@ -285,40 +289,42 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # # print('time  : ' + `time_exp6` + '\n')
                             # # print '******************* FINISH SGD_kNN *******************'
                             #
-                            # print '******************* SGD_kNN BEGIN *******************'
-                            # L_C = 0.5
-                            # f_result.write('L_C : ' + `L_C` + '\n')
-                            # rowNumber = rowNumber + 1
-                            # ws.write(rowNumber, 0, rowNumber)
-                            # ws.write(rowNumber, 1, bound)
-                            # ws.write(rowNumber, 2, steps)
-                            # ws.write(rowNumber, 3, alpha)
-                            # ws.write(rowNumber, 4, lamb)
-                            # ws.write(rowNumber, 5, beta)
-                            # ws.write(rowNumber, 6, L_C)
-                            # start_time = time.time()
-                            #
-                            # nP7, nQ7, numNeighbors = mtxfac_sr.gd_kNN(R, U7, V7, SG, 50, alpha, lamb, beta, L_C, list_index)
-                            #
-                            # time_exp7 = (time.time() - start_time) / 60
-                            #
-                            # exp7=mtxfac_sr.val(validation_index,R, nP7, nQ7)
-                            #
-                            # f_result.write('SGD_kNN: ' + `exp7` + '\n')
-                            # f_result.write('time  : ' + `time_exp7` + '\n')
-                            # f_result.write('k :' + `numNeighbors` + '\n')
-                            #
-                            # ws.write(rowNumber, 9, exp7)
-                            # ws.write(rowNumber, 10, time_exp7)
-                            # # lenOfNeighbor = len(numNeighbors)
-                            # # for i in xrange(lenOfNeighbor):
-                            # #     ws.write(rowNumber, 11 + i, numNeighbors[i])
-                            #
-                            # print('k :' + `numNeighbors` + '\n')
-                            # print('SGD_kNN: ' + `exp7` + '\n')
-                            # print('time  : ' + `time_exp7` + '\n')
-                            # print '******************* FINISH SGD_kNN *******************'
-                            #
+                            print '******************* SGD_kNN BEGIN *******************'
+                            L_C = 5
+                            f_result.write('L_C : ' + `L_C` + '\n')
+                            rowNumber = rowNumber + 1
+                            ws.write(rowNumber, 0, rowNumber)
+                            ws.write(rowNumber, 1, bound)
+                            ws.write(rowNumber, 2, steps)
+                            ws.write(rowNumber, 3, alpha)
+                            ws.write(rowNumber, 4, lamb)
+                            ws.write(rowNumber, 5, beta)
+                            ws.write(rowNumber, 6, L_C)
+                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            start_time = time.time()
+
+                            nP7, nQ7, numNeighbors = mtxfac_sr.gd_kNN(R, U7, V7, SG, 50, alpha, lamb, beta, numNeighbors,
+                                                                      list_index, weightVector)
+
+                            time_exp7 = (time.time() - start_time) / 60
+
+                            exp7=mtxfac_sr.val(validation_index,R, nP7, nQ7)
+
+                            f_result.write('SGD_kNN: ' + `exp7` + '\n')
+                            f_result.write('time  : ' + `time_exp7` + '\n')
+                            f_result.write('k :' + `numNeighbors` + '\n')
+
+                            ws.write(rowNumber, 9, exp7)
+                            ws.write(rowNumber, 10, time_exp7)
+                            # lenOfNeighbor = len(numNeighbors)
+                            # for i in xrange(lenOfNeighbor):
+                            #     ws.write(rowNumber, 11 + i, numNeighbors[i])
+
+                            print('k :' + `numNeighbors` + '\n')
+                            print('SGD_kNN: ' + `exp7` + '\n')
+                            print('time  : ' + `time_exp7` + '\n')
+                            print '******************* FINISH SGD_kNN *******************'
+
                             # # print '******************* SGD_kNN BEGIN *******************'
                             # # L_C = 1
                             # # f_result.write('L_C : ' + `L_C` + '\n')
@@ -353,39 +359,6 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # # print('time  : ' + `time_exp8` + '\n')
                             # # print '******************* FINISH SGD_kNN *******************'
                             #
-                            # print '******************* SGD_kNN BEGIN *******************'
-                            # L_C = 5
-                            # f_result.write('L_C : ' + `L_C` + '\n')
-                            # rowNumber = rowNumber + 1
-                            # ws.write(rowNumber, 0, rowNumber)
-                            # ws.write(rowNumber, 1, bound)
-                            # ws.write(rowNumber, 2, steps)
-                            # ws.write(rowNumber, 3, alpha)
-                            # ws.write(rowNumber, 4, lamb)
-                            # ws.write(rowNumber, 5, beta)
-                            # ws.write(rowNumber, 6, L_C)
-                            # start_time = time.time()
-                            #
-                            # nP9, nQ9, numNeighbors = mtxfac_sr.gd_kNN(R, U9, V9, SG, 50, alpha, lamb, beta, L_C, list_index)
-                            #
-                            # time_exp9 = (time.time() - start_time) / 60
-                            #
-                            # exp9=mtxfac_sr.val(validation_index,R, nP9, nQ9)
-                            #
-                            # f_result.write('SGD_kNN: ' + `exp9` + '\n')
-                            # f_result.write('time  : ' + `time_exp9` + '\n')
-                            # f_result.write('k :' + `numNeighbors` + '\n')
-                            #
-                            # ws.write(rowNumber, 9, exp9)
-                            # ws.write(rowNumber, 10, time_exp9)
-                            # # lenOfNeighbor = len(numNeighbors)
-                            # # for i in xrange(lenOfNeighbor):
-                            # #     ws.write(rowNumber, 11 + i, numNeighbors[i])
-                            #
-                            # print('k :' + `numNeighbors` + '\n')
-                            # print('SGD_kNN: ' + `exp9` + '\n')
-                            # print('time  : ' + `time_exp9` + '\n')
-                            # print '******************* FINISH SGD_kNN *******************'
                             print '******************* SGD_kNN BEGIN *******************'
                             L_C = 10
                             f_result.write('L_C : ' + `L_C` + '\n')
@@ -397,10 +370,49 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             ws.write(rowNumber, 4, lamb)
                             ws.write(rowNumber, 5, beta)
                             ws.write(rowNumber, 6, L_C)
+
+                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
                             start_time = time.time()
 
-                            nP10, nQ10, numNeighbors = mtxfac_sr.gd_kNN(R, U10, V10, SG, 100, alpha, lamb, beta, L_C,
-                                                                      list_index)
+                            nP9, nQ9, numNeighbors = mtxfac_sr.gd_kNN(R, U9, V9, SG, 50, alpha, lamb, beta, numNeighbors,
+                                                                      list_index, weightVector)
+
+                            time_exp9 = (time.time() - start_time) / 60
+
+                            exp9=mtxfac_sr.val(validation_index,R, nP9, nQ9)
+
+                            f_result.write('SGD_kNN: ' + `exp9` + '\n')
+                            f_result.write('time  : ' + `time_exp9` + '\n')
+                            f_result.write('k :' + `numNeighbors` + '\n')
+
+                            ws.write(rowNumber, 9, exp9)
+                            ws.write(rowNumber, 10, time_exp9)
+                            # lenOfNeighbor = len(numNeighbors)
+                            # for i in xrange(lenOfNeighbor):
+                            #     ws.write(rowNumber, 11 + i, numNeighbors[i])
+
+                            print('k :' + `numNeighbors` + '\n')
+                            print('SGD_kNN: ' + `exp9` + '\n')
+                            print('time  : ' + `time_exp9` + '\n')
+                            print '******************* FINISH SGD_kNN *******************'
+                            print '******************* SGD_kNN BEGIN *******************'
+                            L_C = 50
+                            f_result.write('L_C : ' + `L_C` + '\n')
+                            rowNumber = rowNumber + 1
+                            ws.write(rowNumber, 0, rowNumber)
+                            ws.write(rowNumber, 1, bound)
+                            ws.write(rowNumber, 2, steps)
+                            ws.write(rowNumber, 3, alpha)
+                            ws.write(rowNumber, 4, lamb)
+                            ws.write(rowNumber, 5, beta)
+                            ws.write(rowNumber, 6, L_C)
+
+                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+
+                            start_time = time.time()
+
+                            nP10, nQ10, numNeighbors = mtxfac_sr.gd_kNN(R, U10, V10, SG, 100, alpha, lamb, beta, numNeighbors,
+                                                                      list_index, weightVector)
 
                             time_exp10 = (time.time() - start_time) / 60
 
@@ -436,21 +448,21 @@ if __name__ == "__main__":
 
     '************************ EXP GD x GDRS ***************************'
 
-    # R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
-    # R = numpy.array(R)
-    # U = random.uniform(0,0.01,size=(3000, 12000))
-    # V = random.uniform(0,0.01,size=(20000, 12000))
-    # SN_FILE = '../dataset/user_friends'
-    #
-    # exp('NY', R, U, V, SN_FILE, False)
-
-    R = numpy.loadtxt(open("../dataset/NY_MATRIX","rb"),delimiter=",")
+    R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
     R = numpy.array(R)
-    U = numpy.loadtxt(open("../dataset/NY_U","rb"),delimiter=",")
-    V = numpy.loadtxt(open("../dataset/NY_V","rb"),delimiter=",")
-    SN_FILE = '../dataset/NY_SN'
+    U = random.uniform(0,0.01,size=(3000, 12000))
+    V = random.uniform(0,0.01,size=(20000, 12000))
+    SN_FILE = '../dataset/user_friends'
 
-    exp('NY', R, U, V, SN_FILE, True)
+    exp('NY', R, U, V, SN_FILE, False)
+
+    # R = numpy.loadtxt(open("../dataset/NY_MATRIX","rb"),delimiter=",")
+    # R = numpy.array(R)
+    # U = numpy.loadtxt(open("../dataset/NY_U","rb"),delimiter=",")
+    # V = numpy.loadtxt(open("../dataset/NY_V","rb"),delimiter=",")
+    # SN_FILE = '../dataset/NY_SN'
+    #
+    # exp('NY', R, U, V, SN_FILE, True)
     #
     # R = numpy.loadtxt(open("../dataset/IL_MATRIX","rb"),delimiter=",")
     # R = numpy.array(R)
