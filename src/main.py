@@ -150,7 +150,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # print '******************* FINISH SGD_kNN *******************'
 
                             print '******************* SGD_kNN BEGIN *******************'
-                            L_C = 0.5
+                            L_C = 1
                             f_result.write('L_C : ' + `L_C` + '\n')
                             rowNumber = rowNumber + 1
                             ws.write(rowNumber, 0, rowNumber)
@@ -160,11 +160,11 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             ws.write(rowNumber, 4, lamb)
                             ws.write(rowNumber, 5, beta)
                             ws.write(rowNumber, 6, L_C)
-                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            weightVector3, numNeighbors3 = mtxfac_sr.kNN(SG, L_C)
                             start_time = time.time()
 
-                            nP3, nQ3, numNeighbors = mtxfac_sr.gd_kNN(R, U3, V3, SG, 50, alpha, lamb, beta, numNeighbors,
-                                                                      list_index, weightVector)
+                            nP3, nQ3 = mtxfac_sr.gd_kNN(R, U3, V3, SG, 50, alpha, lamb, beta, numNeighbors3,
+                                                                      list_index, weightVector3)
 
                             time_exp3 = (time.time() - start_time) / 60
 
@@ -172,7 +172,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
 
                             f_result.write('SGD_kNN: ' + `exp3` + '\n')
                             f_result.write('time  : ' + `time_exp3` + '\n')
-                            f_result.write('k :' + `numNeighbors` + '\n')
+                            f_result.write('k :' + `numNeighbors3` + '\n')
 
                             ws.write(rowNumber, 9, exp3)
                             ws.write(rowNumber, 10, time_exp3)
@@ -180,7 +180,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # for i in xrange(lenOfNeighbor):
                             #     ws.write(rowNumber, 11 + i, numNeighbors[i])
 
-                            print('k :' + `numNeighbors` + '\n')
+                            print('k :' + `numNeighbors3` + '\n')
                             print('SGD_kNN: ' + `exp3` + '\n')
                             print('time  : ' + `time_exp3` + '\n')
                             print '******************* FINISH SGD_kNN *******************'
@@ -220,7 +220,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # # print '******************* FINISH SGD_kNN *******************'
                             #
                             print '******************* SGD_kNN BEGIN *******************'
-                            L_C = 1
+                            L_C = 10
                             f_result.write('L_C : ' + `L_C` + '\n')
                             rowNumber = rowNumber + 1
                             ws.write(rowNumber, 0, rowNumber)
@@ -230,11 +230,11 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             ws.write(rowNumber, 4, lamb)
                             ws.write(rowNumber, 5, beta)
                             ws.write(rowNumber, 6, L_C)
-                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            weightVector5, numNeighbors5 = mtxfac_sr.kNN(SG, L_C)
                             start_time = time.time()
 
-                            nP5, nQ5, numNeighbors = mtxfac_sr.gd_kNN(R, U5, V5, SG, 50, alpha, lamb, beta, numNeighbors,
-                                                                      list_index, weightVector)
+                            nP5, nQ5 = mtxfac_sr.gd_kNN(R, U5, V5, SG, 50, alpha, lamb, beta, numNeighbors5,
+                                                                      list_index, weightVector5)
 
                             time_exp5 = (time.time() - start_time) / 60
 
@@ -242,7 +242,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
 
                             f_result.write('SGD_kNN: ' + `exp5` + '\n')
                             f_result.write('time  : ' + `time_exp5` + '\n')
-                            f_result.write('k :' + `numNeighbors` + '\n')
+                            f_result.write('k :' + `numNeighbors5` + '\n')
 
                             ws.write(rowNumber, 9, exp5)
                             ws.write(rowNumber, 10, time_exp5)
@@ -250,7 +250,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # for i in xrange(lenOfNeighbor):
                             #     ws.write(rowNumber, 11 + i, numNeighbors[i])
 
-                            print('k :' + `numNeighbors` + '\n')
+                            print('k :' + `numNeighbors5` + '\n')
                             print('SGD_kNN: ' + `exp5` + '\n')
                             print('time  : ' + `time_exp5` + '\n')
                             print '******************* FINISH SGD_kNN *******************'
@@ -290,7 +290,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # # print '******************* FINISH SGD_kNN *******************'
                             #
                             print '******************* SGD_kNN BEGIN *******************'
-                            L_C = 5
+                            L_C = 100
                             f_result.write('L_C : ' + `L_C` + '\n')
                             rowNumber = rowNumber + 1
                             ws.write(rowNumber, 0, rowNumber)
@@ -300,11 +300,11 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             ws.write(rowNumber, 4, lamb)
                             ws.write(rowNumber, 5, beta)
                             ws.write(rowNumber, 6, L_C)
-                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            weightVector7, numNeighbors7 = mtxfac_sr.kNN(SG, L_C)
                             start_time = time.time()
 
-                            nP7, nQ7, numNeighbors = mtxfac_sr.gd_kNN(R, U7, V7, SG, 50, alpha, lamb, beta, numNeighbors,
-                                                                      list_index, weightVector)
+                            nP7, nQ7= mtxfac_sr.gd_kNN(R, U7, V7, SG, 50, alpha, lamb, beta, numNeighbors7,
+                                                                      list_index, weightVector7)
 
                             time_exp7 = (time.time() - start_time) / 60
 
@@ -312,7 +312,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
 
                             f_result.write('SGD_kNN: ' + `exp7` + '\n')
                             f_result.write('time  : ' + `time_exp7` + '\n')
-                            f_result.write('k :' + `numNeighbors` + '\n')
+                            f_result.write('k :' + `numNeighbors7` + '\n')
 
                             ws.write(rowNumber, 9, exp7)
                             ws.write(rowNumber, 10, time_exp7)
@@ -320,7 +320,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # for i in xrange(lenOfNeighbor):
                             #     ws.write(rowNumber, 11 + i, numNeighbors[i])
 
-                            print('k :' + `numNeighbors` + '\n')
+                            print('k :' + `numNeighbors7` + '\n')
                             print('SGD_kNN: ' + `exp7` + '\n')
                             print('time  : ' + `time_exp7` + '\n')
                             print '******************* FINISH SGD_kNN *******************'
@@ -360,7 +360,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # # print '******************* FINISH SGD_kNN *******************'
                             #
                             print '******************* SGD_kNN BEGIN *******************'
-                            L_C = 10
+                            L_C = 1000
                             f_result.write('L_C : ' + `L_C` + '\n')
                             rowNumber = rowNumber + 1
                             ws.write(rowNumber, 0, rowNumber)
@@ -371,11 +371,11 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             ws.write(rowNumber, 5, beta)
                             ws.write(rowNumber, 6, L_C)
 
-                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            weightVector9, numNeighbors9 = mtxfac_sr.kNN(SG, L_C)
                             start_time = time.time()
 
-                            nP9, nQ9, numNeighbors = mtxfac_sr.gd_kNN(R, U9, V9, SG, 50, alpha, lamb, beta, numNeighbors,
-                                                                      list_index, weightVector)
+                            nP9, nQ9= mtxfac_sr.gd_kNN(R, U9, V9, SG, 50, alpha, lamb, beta, numNeighbors9,
+                                                                      list_index, weightVector9)
 
                             time_exp9 = (time.time() - start_time) / 60
 
@@ -383,7 +383,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
 
                             f_result.write('SGD_kNN: ' + `exp9` + '\n')
                             f_result.write('time  : ' + `time_exp9` + '\n')
-                            f_result.write('k :' + `numNeighbors` + '\n')
+                            f_result.write('k :' + `numNeighbors9` + '\n')
 
                             ws.write(rowNumber, 9, exp9)
                             ws.write(rowNumber, 10, time_exp9)
@@ -391,12 +391,12 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # for i in xrange(lenOfNeighbor):
                             #     ws.write(rowNumber, 11 + i, numNeighbors[i])
 
-                            print('k :' + `numNeighbors` + '\n')
+                            print('k :' + `numNeighbors9` + '\n')
                             print('SGD_kNN: ' + `exp9` + '\n')
                             print('time  : ' + `time_exp9` + '\n')
                             print '******************* FINISH SGD_kNN *******************'
                             print '******************* SGD_kNN BEGIN *******************'
-                            L_C = 50
+                            L_C = 10000
                             f_result.write('L_C : ' + `L_C` + '\n')
                             rowNumber = rowNumber + 1
                             ws.write(rowNumber, 0, rowNumber)
@@ -407,12 +407,12 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             ws.write(rowNumber, 5, beta)
                             ws.write(rowNumber, 6, L_C)
 
-                            weightVector, numNeighbors = mtxfac_sr.kNN(SG, L_C)
+                            weightVector10, numNeighbors10 = mtxfac_sr.kNN(SG, L_C)
 
                             start_time = time.time()
 
-                            nP10, nQ10, numNeighbors = mtxfac_sr.gd_kNN(R, U10, V10, SG, 100, alpha, lamb, beta, numNeighbors,
-                                                                      list_index, weightVector)
+                            nP10, nQ10= mtxfac_sr.gd_kNN(R, U10, V10, SG, 100, alpha, lamb, beta, numNeighbors10,
+                                                                      list_index, weightVector10)
 
                             time_exp10 = (time.time() - start_time) / 60
 
@@ -420,7 +420,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
 
                             f_result.write('SGD_kNN: ' + `exp10` + '\n')
                             f_result.write('time  : ' + `time_exp10` + '\n')
-                            f_result.write('k :' + `numNeighbors` + '\n')
+                            f_result.write('k :' + `numNeighbors10` + '\n')
 
                             ws.write(rowNumber, 9, exp10)
                             ws.write(rowNumber, 10, time_exp10)
@@ -428,7 +428,7 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
                             # for i in xrange(lenOfNeighbor):
                             #     ws.write(rowNumber, 11 + i, numNeighbors[i])
 
-                            print('k :' + `numNeighbors` + '\n')
+                            print('k :' + `numNeighbors10` + '\n')
                             print('SGD_kNN: ' + `exp10` + '\n')
                             print('time  : ' + `time_exp10` + '\n')
                             print '******************* FINISH SGD_kNN *******************'
@@ -450,8 +450,8 @@ if __name__ == "__main__":
 
     R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
     R = numpy.array(R)
-    U = random.uniform(0,0.01,size=(3000, 12000))
-    V = random.uniform(0,0.01,size=(20000, 12000))
+    U = random.uniform(0,0.01,size=(3000, 1200))
+    V = random.uniform(0,0.01,size=(20000, 1200))
     SN_FILE = '../dataset/user_friends'
 
     exp('NY', R, U, V, SN_FILE, False)

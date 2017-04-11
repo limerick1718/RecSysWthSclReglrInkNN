@@ -86,9 +86,9 @@ def kNN(social_graph, L_C):
         for j in xrange(len(social_graph[i])):
             if summition != 0:
                 alpha[i, j] = alpha[i, j] / summition
-        print "***********SGD KNN*************"
-        print L_C
-        return alpha, numNeighbors
+    print "***********SGD KNN*************"
+    print L_C
+    return alpha, numNeighbors
 
 def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, numNeighbors, list_index, alpha):
     percent = 0
@@ -126,7 +126,7 @@ def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, numNeighbo
             print numpy.sqrt(rmse/T)
             percent = current_percent
 
-    return U, V, numNeighbors
+    return U, V
 
 def sgd_kNN(R, U, V, SN_FILE, steps, stepLength, lamb, betaParam, L_C, list_index):
     percent = 0
