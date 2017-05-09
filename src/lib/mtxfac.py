@@ -18,20 +18,21 @@ def load_matrix_index(R, bound):
     return list_index, validation_index
 
 def load_matrix_index_for_anotherDataSet(R, bound):
-
+    size = 2100
     list_index = []
     validation_index = []
-    newR = numpy.zeros((2200, 20000))
+    newR = numpy.zeros((size, 20000))
     for i in xrange(len(R)):
         x = R[i][0]
         y = R[i][1]
-        value = R[i][2]/10000
-        newR[x][y] = value
-        randNumber = numpy.random.randint(0, 100)
-        if randNumber <= bound:
-            list_index.append(`x` + ',' + `y`)
-        else:
-            validation_index.append(`x` + ',' + `y`)
+        value = R[i][2]/1000
+        if x<size:
+            newR[x][y] = value
+            randNumber = numpy.random.randint(0, 100)
+            if randNumber <= bound:
+                list_index.append(`x` + ',' + `y`)
+            else:
+                validation_index.append(`x` + ',' + `y`)
 
     return list_index, validation_index, newR
 
@@ -42,43 +43,28 @@ def gd_update(Rij, Ui, Vj, alpha, lamb):
     u_temp = Ui - alpha * ( (e * Vj) + (lamb * Ui) )
     v_temp = Vj - alpha * ( (e * Ui) + (lamb * Vj) )
 
-    cost = e ** 2
 
-    return u_temp, v_temp, cost
+    return u_temp, v_temp
 
-def gd(R, U, V, steps, alpha, lamb):
+def gd(R, U, V, steps, alpha, lamb, list_index):
 
-    percent = 0
-    current_percent = 0
-
-    cost_f = []
-
-    list_index = load_matrix_index(R)
 
     for step in xrange(steps):
-        
-        cost_sum = 0
 
         for index in xrange(len(list_index)):
 
             sI,sJ =  list_index[index].split(',')
 
-            i = int(sI)
-            j = int(sJ)
-        
-            U[i], V[j], cost = gd_update(R[i][j], U[i,:], V[j,:], alpha, lamb)
+            i = int(float(sI))
+            j = int(float(sJ))
 
-            cost_sum += cost
+            e = numpy.dot(U[i].T,V[j]) - R[i,j]
 
-        cost_f.append(cost_sum)
+            u_temp = U[i] - alpha * ( (e * V[j]) + (lamb * U[i]) )
+            V[j] = V[j] - alpha * ( (e * U[i]) + (lamb * V[j]) )
+            U[i] = u_temp
 
-        # current_percent = util.calc_progress(steps, step+1, current_percent)
-
-        # if(current_percent != percent):
-        #     print current_percent
-        #     percent = current_percent
-
-    return U, V, cost_f
+    return U, V
 
 def sgd(R, U, V, steps=1800000, alpha=0.0001, lamb=0.002):
 
