@@ -11,8 +11,7 @@ def userDis(i, f, U, L_C):
 def userDisArray(U, i, L_C, social_graph):
     lenth = len(U)
     disArray = numpy.zeros(lenth)
-    for j in xrange(lenth):
-        if social_graph[i][j] == 1:
+    for j in social_graph[i]:
             disArray[j] = userDis(i, j, U, L_C)
 
     return disArray
@@ -93,10 +92,11 @@ def RskNN(list_index, stepLength, lamb_phi, lamb_U, lamb_V, beta, U, V, L_C, R, 
 
         # step += 1
         # print step
-        sI, sJ = list_index[index].split(',')
+        now= int(float(list_index[index]))
+        i = int(float(R[now][0]))
+        j = int(float(R[now][1]))
+        ratingScores = R[now][2]
 
-        i = int(float(sI))
-        j = int(float(sJ))
         # print "*************************************"
         userArray = userDisArray(U, i, L_C, social_graph)
         imitates, alpha = findkNN(userArray, U)
@@ -106,7 +106,7 @@ def RskNN(list_index, stepLength, lamb_phi, lamb_U, lamb_V, beta, U, V, L_C, R, 
         for p in imitates:
             phi_hat = alpha[p] * U[p] + phi_hat
 
-        e = numpy.dot(phi[i].T, V[j]) - R[i][j]
+        e = numpy.dot(phi[i].T, V[j]) - ratingScores
         res = phi[i] - phi_hat
         gdPhi = V[j] * e + lamb_phi * res + beta * (phi[i] - U[i])
         gdV = phi[i] * e + lamb_V * V[j]
@@ -128,7 +128,7 @@ def RskNN(list_index, stepLength, lamb_phi, lamb_U, lamb_V, beta, U, V, L_C, R, 
             print '**********Vl2 : ' + `Vl2`
             print neighbors.nonzero()
             print sum(neighbors[neighbors.nonzero()])/numpy.count_nonzero(neighbors)
-        if  abs(ratio - 1) < 5 * 10 ** (-14):
+        if  abs(ratio - 1) < 5 * 10 ** (-16):
             # print '**********final step : ' + `step`
             print '**********ratio : ' + `ratio - 1`
             print '**********Ul2 : ' + `Ul2`

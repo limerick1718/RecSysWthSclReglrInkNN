@@ -15,12 +15,12 @@ def gd_default(R, U, V, social_graph, alpha, lamb, beta, list_index):
         for index in xrange(len_list_index):
             step += 1
             # print 'step' + `step`
-            sI, sJ = list_index[index].split(',')
+            now = int(float(list_index[index]))
+            i = int(float(R[now][0]))
+            j = int(float(R[now][1]))
+            ratingScores = R[now][2]
 
-            i = int(float(sI))
-            j = int(float(sJ))
-
-            e = numpy.dot(U[i].T, V[j]) - R[i][j]
+            e = numpy.dot(U[i].T, V[j]) - ratingScores
             gdU = (e * V[j]) + (lamb * U[i]) + beta * Utilities.sr_f(i, U, social_graph)
             gdV = (e * U[i]) + (lamb * V[j])
             u_temp = U[i] - alpha * gdU
@@ -37,8 +37,6 @@ def gd_default(R, U, V, social_graph, alpha, lamb, beta, list_index):
                 print '**********ratio : ' + `ratio - 1`
                 print '**********Ul2 : ' + `Ul2`
                 print '**********Vl2 : ' + `Vl2`
-                # print neighbors.nonzero()
-                # print sum(neighbors[neighbors.nonzero()]) / numpy.count_nonzero(neighbors)
 
             if  abs(ratio - 1) < 5 * 10 **(-14):
                 print '**********final step : ' + `step`

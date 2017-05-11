@@ -6,17 +6,18 @@ def rmse(validation_index, R, U, V):
     rmse = 0
     T = 0
     for index in xrange(len(validation_index)):
-        sI,sJ =  validation_index[index].split(',')
+        now =  int(float(validation_index[index]))
 
-        i = int(float(sI))
-        j = int(float(sI))
+        i = int(float(R[now][0]))
+        j = int(float(R[now][1]))
+        ratingScores = int(float(R[now][2]))
 
         T += 1
 
         UT = U[i].T
         VT = V[j]
-        RT = R[i][j]
-        e = numpy.dot(UT, VT) - RT
+
+        e = numpy.dot(UT, VT) - ratingScores
         rmse += e ** 2
 
     return  numpy.sqrt(rmse/T)
@@ -27,17 +28,17 @@ def mae(validation_index, R, U, V):
     rmse = 0
     T = 0
     for index in xrange(len(validation_index)):
-        sI,sJ =  validation_index[index].split(',')
-
-        i = int(float(sI))
-        j = int(float(sI))
+        now =  int(float(validation_index[index]))
+        i = int(float(R[now][0]))
+        j = int(float(R[now][1]))
+        ratingScores = int(float(R[now][2]))
 
         T += 1
 
         UT = U[i].T
         VT = V[j]
-        RT = R[i][j]
-        e = numpy.dot(UT, VT) - RT
+
+        e = numpy.dot(UT, VT) - ratingScores
         rmse += abs(e)
 
     return  rmse/T
@@ -45,8 +46,9 @@ def mae(validation_index, R, U, V):
 def sr_f(i, P, SG):
     reg = 0
 
-    for f in xrange(len(SG[i])):
-        reg += SG[i][f] * (P[i] - P[f])
+    for j in len(SG[i]):
+        reg += SG[i][j][1] * (P[i] - P[SG[i][j][0]])
+        # reg += SG[i][f] * (P[i] - P[f])
 
     return reg
 
@@ -87,6 +89,23 @@ def load_matrix_index_for_anotherDataSet(R, bound, userNumber, itemNumber):
                 list_index.append(`x` + ',' + `y`)
             else:
                 validation_index.append(`x` + ',' + `y`)
+
+    return list_index, validation_index, newR
+
+def load_matrix_index_for_anotherDataSet_new(R, bound, userNumber):
+    list_index = []
+    validation_index = []
+    newR = [[] for j in range(userNumber + 1)]
+    for i in xrange(len(R)):
+        x = int(float(R[i][0]))
+        R[i][2] = R[i][2] * 1.0 /10000
+        # Change to proper scale of number
+        newR[x].append([R[i][1], R[i][2]/10000])
+        randNumber = numpy.random.randint(0, 100)
+        if randNumber <= bound:
+            list_index.append(`i`)
+        else:
+            validation_index.append(`i`)
 
     return list_index, validation_index, newR
 
@@ -138,28 +157,34 @@ def load_grafo_social_for_anotherDataSet_old(R, SN_FILE):
 
     return social_graph
 
-def load_grafo_social_for_anotherDataSet(R, social_network, userNumber):
+def load_grafo_social_for_anotherDataSet(newR, social_network, userNumber, itemNumber):
     grafo_size = userNumber
 
-    social_graph = numpy.zeros((grafo_size, grafo_size))
-    social_graph_preSim = numpy.zeros((grafo_size, grafo_size))
+    social_graph = [[] for i in xrange(userNumber + 1)]
+    social_graph_preSim = [[] for i in xrange(userNumber + 1)]
+    userVector = numpy.zeros((itemNumber + 1, 1))
+    friendVector = numpy.zeros((itemNumber + 1, 1))
 
     for i in xrange(len(social_network)):
         user = int(float(social_network[i][0]))
         friend = int(float(social_network[i][1]))
 
-        if user < grafo_size:
-            if friend < grafo_size:
+        userItemsRating = newR[user]
+        for j in xrange(len(userItemsRating)):
+            userVector[int(float(userItemsRating[j][0]))] = float(userItemsRating[j][1])
+        friendsItemsRating = newR[friend]
+        for k in xrange(len(friendsItemsRating)):
+            friendVector[int(float(friendsItemsRating[k][0]))] = float(friendsItemsRating[k][1])
 
-                social_graph[user][friend] = 1
-                social_graph[friend][user] = 1
+        if user <= grafo_size:
+            if friend > user:
 
-                x = R[user]
-                y = R[friend]
+                social_graph[user].append(friend)
+                social_graph[friend].append(user)
 
-                cor_pearson = util.pearson(x, y)
+                cor_pearson = util.pearson(userVector, friendVector)
 
-                social_graph_preSim[user][friend] = cor_pearson
-                social_graph_preSim[friend][user] = cor_pearson
-
+                social_graph_preSim[user].append([friend,cor_pearson])
+                social_graph_preSim[friend].append([user,cor_pearson])
+    print '*******************load social graph success************************'
     return social_graph, social_graph_preSim

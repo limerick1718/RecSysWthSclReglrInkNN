@@ -7,14 +7,12 @@ from numpy import random
 def alphaGenerator(userNumber, social_graph):
     alpha = numpy.zeros((userNumber, userNumber))
     for i in xrange(userNumber):
-        friendsNumber = numpy.count_nonzero(social_graph[i])
+        friendsNumber = len(social_graph[i])
         if friendsNumber != 0:
             weight = 1.0/friendsNumber
-            validFriends = social_graph[i].nonzero()
-            # print len(validFriends[0])
-            for j in xrange(len(validFriends[0])):
 
-                alpha[i][validFriends[0][j]] = weight
+            for j in social_graph[i]:
+                alpha[i][j] = weight
 
     return alpha
 
@@ -32,25 +30,22 @@ def FR(list_index, stepLength, lamb_phi, lamb_U, lamb_V, lamb_alpha, U, V, R, so
             break
         round += 1
         index = randint(0, len_list_index - 1)
+        now = int(float(list_index[index]))
+        i = int(float(R[now][0]))
+        j = int(float(R[now][1]))
+        ratingScores = R[now][2]
 
-        sI, sJ = list_index[index].split(',')
-
-        i = int(float(sI))
-        j = int(float(sJ))
-
-
-        phi_hat = numpy.zeros(len(U[1]))
-        validFriends = social_graph[i].nonzero()
-        for p in validFriends[0]:
+        phi_hat = numpy.zeros(len(V))
+        for p in social_graph[i]:
             phi_hat = alpha[i][p] * U[p] + phi_hat
 
-        e = numpy.dot(phi[i].T, V[j]) - R[i][j]
+        e = numpy.dot(phi[i].T, V[j]) - ratingScores
         res = phi[i] - phi_hat
         gdPhi = V[j] * e + lamb_phi * res
         gdV = phi[i] * e + lamb_V * V[j]
         gdU = - lamb_phi * res * alpha[i][i] + lamb_U * U[i]
         Selse = numpy.zeros(len(U))
-        for p in validFriends[0]:
+        for p in social_graph[i]:
             left = numpy.dot(U[p] ,(phi[i] - alpha[i][p] * U[p]))
             Selse[p] = left + Selse[p]
         gdAlpha = - lamb_phi * Selse + lamb_alpha * alpha[i]

@@ -59,7 +59,7 @@ def afterWrite(ws,f_result, validation_index, newR, time_exp, numNeighbors, step
     print('time_M  : ' + `time_M` + '\n')
     print ('steps :' + `steps` + '\n')
 
-def rskNN(bound, alpha, lamb, beta, U, V, L_C, list_index, validation_index, newR, SG):
+def rskNN(bound, alpha, lamb, beta, U, V, L_C, list_index, validation_index, R, SG):
     global rowNumber
     global ws
     print '******************* SGD_kNN BEGIN *******************'
@@ -68,13 +68,13 @@ def rskNN(bound, alpha, lamb, beta, U, V, L_C, list_index, validation_index, new
     preWrite(rowNumber, ws,f_result, bound, alpha, lamb, beta, L_C)
     start_time = time.time()
 
-    U, V, numNeighbors, steps = kNN_Utils.RskNN(list_index, alpha, 0.001, 0.001, 0.001, 0.1,U, V, L_C, newR, SG)
+    U, V, numNeighbors, steps = kNN_Utils.RskNN(list_index, alpha, 0.001, 0.001, 0.001, 0.1,U, V, L_C, R, SG)
 
     time_exp = (time.time() - start_time) / 60
-    afterWrite(ws,f_result, validation_index, newR, time_exp, numNeighbors, steps)
+    afterWrite(ws,f_result, validation_index, R, time_exp, numNeighbors, steps)
     print '******************* FINISH SGD_kNN *******************'
 
-def gdOld(bound, alpha, lamb, beta, U, V, list_index, validation_index, newR, SG):
+def gdOld(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SG):
     global rowNumber
     global ws
     print '******************* SGD_kNN BEGIN *******************'
@@ -84,13 +84,13 @@ def gdOld(bound, alpha, lamb, beta, U, V, list_index, validation_index, newR, SG
 
     start_time = time.time()
 
-    U, V, steps = OlderAlgo.gd_default(newR, U, V, SG, alpha, lamb, beta, list_index)
+    U, V, steps = OlderAlgo.gd_default(R, U, V, SG, alpha, lamb, beta, list_index)
     time_exp = (time.time() - start_time) / 60
-    afterWrite(ws,f_result, validation_index, newR, time_exp, 0, steps)
+    afterWrite(ws,f_result, validation_index, R, time_exp, 0, steps)
 
     print '******************* FINISH SGD_kNN *******************'
 
-def FR(bound, alpha, lamb, beta, U, V, list_index, validation_index, newR, SG):
+def FR(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SG):
     global rowNumber
     global ws
     print '******************* SGD_kNN BEGIN *******************'
@@ -100,9 +100,9 @@ def FR(bound, alpha, lamb, beta, U, V, list_index, validation_index, newR, SG):
 
     start_time = time.time()
 
-    U, V, steps = FriendsRegular.FR(list_index, alpha, 0.001, 0.001, 0.001, 0.1, U, V, newR, SG)
+    U, V, steps = FriendsRegular.FR(list_index, alpha, 0.001, 0.001, 0.001, 0.1, U, V, R, SG)
     time_exp = (time.time() - start_time) / 60
-    afterWrite(ws,f_result, validation_index, newR, time_exp, 0, steps)
+    afterWrite(ws,f_result, validation_index, R, time_exp, 0, steps)
 
     print '******************* FINISH SGD_kNN *******************'
 
@@ -112,12 +112,12 @@ def loadFile(isTraditionalFile, bound, R, social_network):
     if isTraditionalFile:
         list_index, validation_index = Utilities.load_matrix_index(R, bound)
     else:
-        list_index, validation_index, newR = Utilities.load_matrix_index_for_anotherDataSet(R, bound, userNumber, itemNumber)
+        list_index, validation_index, newR = Utilities.load_matrix_index_for_anotherDataSet_new(R, bound, userNumber)
 
     if isTraditionalFile:
         SG = Utilities.load_grafo_social(R, social_network)
     else:
-        SG, SGS = Utilities.load_grafo_social_for_anotherDataSet(newR, social_network, userNumber, itemNumber)
+        SG,SGS = Utilities.load_grafo_social_for_anotherDataSet(newR, social_network, userNumber, itemNumber)
     return list_index, validation_index, newR, SG, SGS
 
 def excelHelper(ws):
@@ -156,14 +156,14 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
     excelHelper(ws)
 
     for bound in Bound:
-        list_index, validation_index, newR, SG, SGS = loadFile(isTraditionalFile, bound, R, SN_FILE)
+        list_index, validation_index, newR, SG, SGS= loadFile(isTraditionalFile, bound, R, SN_FILE)
         for alpha in Alpha:
             for lamb in Lamb:
                 for beta in Beta:
-                    gdOld(bound, alpha, lamb, beta, U, V, list_index, validation_index, newR, SGS)
-                    FR(bound, alpha, lamb, beta, U, V, list_index, validation_index, newR, SG)
+                    gdOld(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SGS)
+                    FR(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SG)
                     for L_C in L_CRatio:
-                        rskNN(bound, alpha, lamb, beta, U, V, L_C, list_index, validation_index, newR, SG)
+                        rskNN(bound, alpha, lamb, beta, U, V, L_C, list_index, validation_index, R, SG)
                     print '******************* FINISH L_C *******************'
                 print '******************* FINISH Beta *******************'
             print '******************* FINISH Lamb *******************'
@@ -177,26 +177,27 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
 if __name__ == "__main__":
 
     '************************ EXP GD x GDRS ***************************'
-    # global f_result
-    # f_result = open('../resultSet/lastfm' + '_' + date, 'w')
-    # R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
-    # R = numpy.array(R)
-    # U = random.uniform(0,0.01,size=(2100, 100))
-    # V = random.uniform(0,0.01,size=(20000, 100))
-    # SN_FILE = '../dataset/user_friends'
-    #
-    # exp('lastfm', R, U, V, SN_FILE, False)
-
     global f_result
-    f_result = open('../resultSet/Epinions' + '_' + date, 'w')
-    R = numpy.loadtxt(open("../dataset/epinions/ratings_data.txt", "rb"), delimiter=' ')
+    f_result = open('../resultSet/lastfm' + '_' + date, 'w')
+    R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
     R = numpy.array(R)
-    U = random.uniform(0,0.01,size=(50000, 100))
-    V = random.uniform(0,0.01,size=(200000, 100))
-    SN_FILE = '../dataset/epinions/trust_data.txt'
-    social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=' ')
+    U = random.uniform(0,0.01,size=(2200, 100))
+    V = random.uniform(0,0.01,size=(20000, 100))
+    SN_FILE = '../dataset/user_friends'
+    social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter='\t')
 
     exp('lastfm', R, U, V, social_network, False)
+
+    # global f_result
+    # f_result = open('../resultSet/Epinions' + '_' + date, 'w')
+    # R = numpy.loadtxt(open("../dataset/epinions/ratings_data.txt", "rb"), delimiter=' ')
+    # R = numpy.array(R)
+    # U = random.uniform(0,0.01,size=(50000, 100))
+    # V = random.uniform(0,0.01,size=(200000, 100))
+    # SN_FILE = '../dataset/epinions/trust_data.txt'
+    # social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=' ')
+    #
+    # exp('lastfm', R, U, V, social_network, False)
     #
     # R = numpy.loadtxt(open("../dataset/hetrec2011-delicious-2k/user_taggedbookmarks", "rb"), delimiter='\t')
     # R = numpy.array(R)
