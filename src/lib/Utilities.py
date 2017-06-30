@@ -1,53 +1,61 @@
 import numpy
 from lib import util
+from scipy.sparse import csr_matrix
+import scipy
+import math
 
-def rmse(validation_index, R, U, V):
+def rmse(R, U, V):
 
     rmse = 0
-    T = 0
-    for index in xrange(len(validation_index)):
-        now =  int(float(validation_index[index]))
+    step = 0
+    row , col = csr_matrix.nonzero(R)
+    length = len(row)
+    for iterater in xrange(length):
+        i = row[iterater]
+        j = col[iterater]
+        ratingScores = R[i,j]
 
-        i = int(float(R[now][0]))
-        j = int(float(R[now][1]))
-        ratingScores = int(float(R[now][2]))
+        step += 1
 
-        T += 1
-
-        UT = U[i].T
-        VT = V[j]
+        UT = U[i]
+        VT = V.T[j].T
 
         e = numpy.dot(UT, VT) - ratingScores
         rmse += e ** 2
 
-    return  numpy.sqrt(rmse/T)
+    return  numpy.sqrt(rmse/step)
 
 
-def mae(validation_index, R, U, V):
+def mae( R, U, V):
 
     rmse = 0
-    T = 0
-    for index in xrange(len(validation_index)):
-        now =  int(float(validation_index[index]))
-        i = int(float(R[now][0]))
-        j = int(float(R[now][1]))
-        ratingScores = int(float(R[now][2]))
+    step = 0
+    row, col = csr_matrix(R).nonzero()
+    length = len(row)
+    for iterater in xrange(length):
+        i = row[iterater]
+        j = col[iterater]
+        ratingScores = R[i, j]
 
-        T += 1
+        step += 1
 
-        UT = U[i].T
-        VT = V[j]
+        UT = U[i]
+        VT = V.T[j].T
 
         e = numpy.dot(UT, VT) - ratingScores
         rmse += abs(e)
 
-    return  rmse/T
+    return  rmse/step
 
 def sr_f(i, P, SG):
     reg = 0
 
-    for j in len(SG[i]):
-        reg += SG[i][j][1] * (P[i] - P[SG[i][j][0]])
+    social_relation = csr_matrix(SG).getrow(i)
+    friends = social_relation.nonzero()
+    for friend in friends:
+        reg += SG[i, friend] * (P[i] - P[friend])
+    # for j in xrange(len(SG[i])):
+    #     reg += SG[i][j][1] * (P[i] - P[SG[i][j][0]])
         # reg += SG[i][f] * (P[i] - P[f])
 
     return reg
@@ -91,6 +99,19 @@ def load_matrix_index_for_anotherDataSet(R, bound, userNumber, itemNumber):
                 validation_index.append(`x` + ',' + `y`)
 
     return list_index, validation_index, newR
+
+def load_index(bound, R):
+    list_index = []
+    validation_index = []
+    for i in csr_matrix.nonzero(R):
+        print i
+        randNumber = numpy.random.randint(0, 100)
+        if randNumber <= bound:
+            list_index.append(`i`)
+        else:
+            validation_index.append(`i`)
+
+    return list_index, validation_index
 
 def load_matrix_index_for_anotherDataSet_new(R, bound, userNumber):
     list_index = []
@@ -157,24 +178,35 @@ def load_grafo_social_for_anotherDataSet_old(R, SN_FILE):
 
     return social_graph
 
-def load_grafo_social_for_anotherDataSet(newR, social_network, userNumber, itemNumber):
-    grafo_size = userNumber
+def load_grafo_social_for_anotherDataSet(R, social_network, userNumber):
 
-    social_graph = [[] for i in xrange(userNumber + 1)]
-    social_graph_preSim = [[] for i in xrange(userNumber + 1)]
-    userVector = numpy.zeros((itemNumber + 1, 1))
-    friendVector = numpy.zeros((itemNumber + 1, 1))
-
+    row = []
+    col = []
+    data = []
     for i in xrange(len(social_network)):
         user = int(float(social_network[i][0]))
         friend = int(float(social_network[i][1]))
 
-        userItemsRating = newR[user]
-        for j in xrange(len(userItemsRating)):
-            userVector[int(float(userItemsRating[j][0]))] = float(userItemsRating[j][1])
-        friendsItemsRating = newR[friend]
-        for k in xrange(len(friendsItemsRating)):
-            friendVector[int(float(friendsItemsRating[k][0]))] = float(friendsItemsRating[k][1])
+        userItemsRating = R.getrow(user).transpose().todense()
+        friendsItemsRating = R.getrow(friend).transpose().todense()
+        PCC, meiyongde = scipy.stats.pearsonr(userItemsRating, friendsItemsRating)
+
+        row.append(user)
+        col.append(friend)
+        data.append(PCC[0])
+
+    social_graph_preSim = csr_matrix((data, (row, col)), shape=(userNumber, userNumber))
+    print '*******************load social graph success************************'
+    return social_graph_preSim
+
+def load_grafo_social_for_anotherDataSet1(newR, social_network, userNumber, itemNumber):
+    grafo_size = userNumber
+
+    social_graph = [[] for i in xrange(userNumber + 1)]
+
+    for i in xrange(len(social_network)):
+        user = int(float(social_network[i][0]))
+        friend = int(float(social_network[i][1]))
 
         if user <= grafo_size:
             if friend > user:
@@ -182,9 +214,57 @@ def load_grafo_social_for_anotherDataSet(newR, social_network, userNumber, itemN
                 social_graph[user].append(friend)
                 social_graph[friend].append(user)
 
-                cor_pearson = util.pearson(userVector, friendVector)
 
-                social_graph_preSim[user].append([friend,cor_pearson])
-                social_graph_preSim[friend].append([user,cor_pearson])
     print '*******************load social graph success************************'
-    return social_graph, social_graph_preSim
+    return social_graph
+
+def pearsonr(x, y):
+
+    x = numpy.asarray(x)
+    y = numpy.asarray(y)
+    n = len(x)
+    mx = x.mean()
+    my = y.mean()
+    xm, ym = x - mx, y - my
+    r_num = numpy.add.reduce(xm * ym)
+    r_den = numpy.sqrt(scipy.stats._sum_of_squares(xm) * scipy.stats._sum_of_squares(ym))
+    r = r_num / r_den
+
+
+    for i in r:
+        i = min(i,1.0)
+        i = max(i, -1.0)
+    # r = max(min(r, 1.0), -1.0)
+    df = n - 2
+    if abs(r) == 1.0:
+        prob = 0.0
+    else:
+        t_squared = r**2 * (df / ((1.0 - r) * (1.0 + r)))
+        prob = scipy.stats._betai(0.5*df, 0.5, df/(df+t_squared))
+
+    return r, prob
+
+def average(x):
+    assert len(x) > 0
+    print len(x.T)
+    sumation = sum(x)
+    print sumation
+    return float(sumation) / len(x)
+
+def pearson_def(x, y):
+    assert len(x) == len(y)
+    n = len(x)
+    assert n > 0
+    avg_x = average(x)
+    avg_y = average(y)
+    diffprod = 0
+    xdiff2 = 0
+    ydiff2 = 0
+    for idx in range(n):
+        xdiff = x[idx] - avg_x
+        ydiff = y[idx] - avg_y
+        diffprod += xdiff * ydiff
+        xdiff2 += xdiff * xdiff
+        ydiff2 += ydiff * ydiff
+
+    return diffprod / math.sqrt(xdiff2 * ydiff2)

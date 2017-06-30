@@ -1,71 +1,72 @@
 import numpy
-import datetime
 from lib import Utilities
 from random import randint
 from numpy import random
+from scipy.sparse import csr_matrix
 
 def alphaGenerator(userNumber, social_graph):
     alpha = numpy.zeros((userNumber, userNumber))
+    social_graph = csr_matrix(social_graph)
     for i in xrange(userNumber):
-        friendsNumber = len(social_graph[i])
+        social_relation = social_graph.getrow(i)
+        friendsNumber = social_relation.count_nonzero()
         if friendsNumber != 0:
             weight = 1.0/friendsNumber
 
-            for j in social_graph[i]:
-                alpha[i][j] = weight
-
+            for j in social_relation.nonzero():
+                alpha[i,j] = weight
+    alpha = csr_matrix(alpha)
     return alpha
 
 
-def FR(list_index, stepLength, lamb_phi, lamb_U, lamb_V, lamb_alpha, U, V, R, social_graph):
-    len_list_index = len(list_index)
-    userNumber = len(U)
-    phi = random.uniform(0, 0.01, size=(userNumber, 100))
+def FR(R, stepLength, lamb_phi, lamb_U, lamb_V, lamb_alpha, U, V, social_graph, userNumber):
+    row, col = csr_matrix(R).nonzero()
+    length = len(row)
+    phi = random.uniform(0, 0.01, size=(userNumber, 10))
     round = 0
-    Rmse = Utilities.rmse(list_index, R, U, V)
+    Rmse = Utilities.rmse(R, U, V)
     exitFlag = False
     alpha = alphaGenerator(userNumber, social_graph)
     while True:
         if exitFlag == True:
             break
         round += 1
-        index = randint(0, len_list_index - 1)
-        now = int(float(list_index[index]))
-        i = int(float(R[now][0]))
-        j = int(float(R[now][1]))
-        ratingScores = R[now][2]
+        index = randint(0, length - 1)
+        i = row[index]
+        j = col[index]
+        ratingScores = R[i,j]
 
-        phi_hat = numpy.zeros(len(V))
-        for p in social_graph[i]:
-            phi_hat = alpha[i][p] * U[p] + phi_hat
+        phi_hat = numpy.zeros(len(U[1]))
+        for p in social_graph.getrow(i).nonzero():
+            phi_hat = alpha[i,p] * U[p] + phi_hat
 
-        e = numpy.dot(phi[i].T, V[j]) - ratingScores
+        e = numpy.dot(phi[i], V.T[j].T) - ratingScores
         res = phi[i] - phi_hat
-        gdPhi = V[j] * e + lamb_phi * res
-        gdV = phi[i] * e + lamb_V * V[j]
-        gdU = - lamb_phi * res * alpha[i][i] + lamb_U * U[i]
+        gdPhi = V.T[j].T * e + lamb_phi * res
+        gdV = phi[i] * e + lamb_V * V.T[j].T
+        gdU = - lamb_phi * res * alpha[i,i] + lamb_U * U[i]
         Selse = numpy.zeros(len(U))
-        for p in social_graph[i]:
-            left = numpy.dot(U[p] ,(phi[i] - alpha[i][p] * U[p]))
+        for p in social_graph.getrow(i).nonzero():
+            left = numpy.dot(U[p] ,(phi[i] - alpha[i,p] * U[p]).T)
             Selse[p] = left + Selse[p]
         gdAlpha = - lamb_phi * Selse + lamb_alpha * alpha[i]
 
         U[i] = U[i] - stepLength * gdU
-        V[j] = V[j] - stepLength * gdV
+        V.T[j] = (V.T[j].T - stepLength * gdV).T
         phi[i] = phi[i] - stepLength * gdPhi
         alpha[i] = alpha[i] - stepLength * gdAlpha
 
-        Ul2 = numpy.dot(gdU.T, gdU)
+        Ul2 = numpy.dot(gdU, gdU.T)
         Vl2 = numpy.dot(gdV.T, gdV)
 
-        nowRmse = Utilities.rmse(list_index, R, U, V)
+        nowRmse = Utilities.rmse( R, U, V)
         ratio = (nowRmse * 1.0) / (Rmse * 1.0)
-        if round % 100 == 0:
+        if round % 30 == 0:
             print round
             print '**********ratio : ' + `ratio - 1`
             print '**********Ul2 : ' + `Ul2`
             print '**********Vl2 : ' + `Vl2`
-        if abs(ratio - 1) < 5 * 10 ** (-14):
+        if abs(ratio - 1) < 5 * 10 ** (-7) :#and Ul2[0][0] < 10**(-14) and Vl2 < 10 **(-10):
             print '**********ratio : ' + `ratio - 1`
             print '**********Ul2 : ' + `Ul2`
             print '**********Vl2 : ' + `Vl2`

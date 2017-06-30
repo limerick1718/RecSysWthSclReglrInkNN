@@ -1,44 +1,44 @@
 import numpy
 from lib import Utilities
+from scipy.sparse import csr_matrix
 
-def gd_default(R, U, V, social_graph, alpha, lamb, beta, list_index):
-
-    len_list_index = len(list_index)
+def social_regular(R_train, U, V, social_graph, alpha, lamb, beta):
 
     round = 0
-    Rmse = Utilities.rmse(list_index, R, U, V)
+    Rmse = Utilities.rmse(R_train, U, V)
     exitFlag = False
+    row , col  = csr_matrix.nonzero(R_train)
+    length = len(row)
     while True:
         round += 1
         print '**************************************************round*********************************' + `round`
         step = 0
-        for index in xrange(len_list_index):
+        for index in xrange(length):
             step += 1
-            # print 'step' + `step`
-            now = int(float(list_index[index]))
-            i = int(float(R[now][0]))
-            j = int(float(R[now][1]))
-            ratingScores = R[now][2]
+            print step
+            i = row[index]
+            j = col[index]
+            ratingScores = R_train[i,j]
 
-            e = numpy.dot(U[i].T, V[j]) - ratingScores
-            gdU = (e * V[j]) + (lamb * U[i]) + beta * Utilities.sr_f(i, U, social_graph)
-            gdV = (e * U[i]) + (lamb * V[j])
+            e = numpy.dot(U[i], V.T[j].T) - ratingScores
+            gdU = (e * V.T[j].T) + (lamb * U[i]) + beta * Utilities.sr_f(i, U, social_graph)
+            gdV = (e * U[i]) + (lamb * V.T[j].T)
             u_temp = U[i] - alpha * gdU
-            V[j] = V[j] - alpha * gdV
+            V.T[j]= (V.T[j].T - alpha * gdV).T
             U[i] = u_temp
 
-            Ul2 = numpy.dot(gdU.T, gdU)
+            Ul2 = numpy.dot(gdU, gdU.T)
             Vl2 = numpy.dot(gdV.T, gdV)
 
-            nowRmse = Utilities.rmse(list_index, R, U, V)
+            nowRmse = Utilities.rmse(R_train, U, V)
             ratio = (nowRmse * 1.0) / (Rmse * 1.0)
-            if round % 100 == 0:
+            if step % 30 == 0:
                 print round
                 print '**********ratio : ' + `ratio - 1`
                 print '**********Ul2 : ' + `Ul2`
                 print '**********Vl2 : ' + `Vl2`
 
-            if  abs(ratio - 1) < 5 * 10 **(-14):
+            if  abs(ratio - 1) < 5 * 10 **(-7):
                 print '**********final step : ' + `step`
                 print '**********ratio : ' + `ratio - 1`
                 print '**********Ul2 : ' + `Ul2`
@@ -51,7 +51,7 @@ def gd_default(R, U, V, social_graph, alpha, lamb, beta, list_index):
             break
 
 
-    return U, V, round * len(list_index)+step
+    return U, V, round * length+step
 
 def gd_kNN(R, U, V, social_graph, steps, stepLength, lamb, betaParam, L_C, list_index):
     percent = 0

@@ -2,17 +2,17 @@ from lib import kNN_Utils
 from lib import OlderAlgo
 from lib import Utilities
 from lib import FriendsRegular
+from sklearn.model_selection import KFold
+
 import numpy
 import time
 import xlwt
-
-# import pylab
+import dataProcessor
 import datetime
-from numpy import random
 
+global expName
 global  date
 date = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-global f_result
 global rowNumber
 rowNumber = 0
 wb = xlwt.Workbook()
@@ -21,8 +21,16 @@ ws = wb.add_sheet('RssrkNN')
 global userNumber
 global itemNumber
 
-def preWrite(rowNumber, ws,f_result, bound, alpha, lamb, beta, L_C):
-    f_result.write('L_C : ' + `L_C` + '\n')
+
+def fileWriter(values):
+    global date
+    global expName
+    f_result = open('F:/git/ml/RssrkNN/resultSet'+expName+date, 'a')
+    f_result.write( values + "\n")
+    f_result.close()
+
+def preWrite(rowNumber, ws,bound, alpha, lamb, beta, L_C):
+    fileWriter('L_C : ' + `L_C` + '\n')
     ws.write(rowNumber, 0, rowNumber)
     ws.write(rowNumber, 1, bound)
     ws.write(rowNumber, 3, alpha)
@@ -30,19 +38,19 @@ def preWrite(rowNumber, ws,f_result, bound, alpha, lamb, beta, L_C):
     ws.write(rowNumber, 5, beta)
     ws.write(rowNumber, 6, L_C)
 
-def afterWrite(ws,f_result, validation_index, newR, time_exp, numNeighbors, steps):
+def afterWrite(ws,R_test, time_exp, numNeighbors, steps, U, V):
     start_timeR = time.time()
-    rmse = Utilities.rmse(validation_index, newR, U, V)
+    rmse = Utilities.rmse(R_test, U, V)
     time_R = (time.time() - start_timeR) / 60
     start_timeM = time.time()
-    mae = Utilities.mae(validation_index, newR, U, V)
+    mae = Utilities.mae(R_test, U, V)
     time_M = (time.time() - start_timeM) / 60
-    f_result.write('rmse: ' + `rmse` + '\n')
-    f_result.write('mae: ' + `mae` + '\n')
-    f_result.write('time  : ' + `time_exp` + '\n')
-    f_result.write('k :' + `numNeighbors` + '\n')
-    f_result.write('time_R  : ' + `time_R` + '\n')
-    f_result.write('time_M  : ' + `time_M` + '\n')
+    fileWriter('rmse: ' + `rmse` + '\n')
+    fileWriter('mae: ' + `mae` + '\n')
+    fileWriter('time  : ' + `time_exp` + '\n')
+    fileWriter('k :' + `numNeighbors` + '\n')
+    fileWriter('time_R  : ' + `time_R` + '\n')
+    fileWriter('time_M  : ' + `time_M` + '\n')
 
     ws.write(rowNumber, 9, rmse)
     ws.write(rowNumber, 10, time_exp)
@@ -59,66 +67,63 @@ def afterWrite(ws,f_result, validation_index, newR, time_exp, numNeighbors, step
     print('time_M  : ' + `time_M` + '\n')
     print ('steps :' + `steps` + '\n')
 
-def rskNN(bound, alpha, lamb, beta, U, V, L_C, list_index, validation_index, R, SG):
+def rskNN(bound, alpha, lamb, beta, U, V, L_C, R_train, R_test, SG):
+    global rowNumber
+    global ws
+    global userNumber
+    print '******************* SGD_kNN BEGIN *******************'
+
+    rowNumber = rowNumber + 1
+    preWrite(rowNumber, ws,bound, alpha, lamb, beta, L_C)
+    start_time = time.time()
+
+    U_KNN, V_KNN, numNeighbors, steps = kNN_Utils.RskNN(R_train, alpha, 0.001, 0.001, 0.001, 0.1,U, V, L_C, SG, userNumber)
+
+    time_exp = (time.time() - start_time) / 60
+    afterWrite(ws,R_test, time_exp, numNeighbors, steps,U_KNN,V_KNN)
+    print '******************* FINISH SGD_kNN *******************'
+
+def social_regularization(bound, alpha, lamb, beta, U, V, R_trian, R_test, SG):
     global rowNumber
     global ws
     print '******************* SGD_kNN BEGIN *******************'
 
     rowNumber = rowNumber + 1
-    preWrite(rowNumber, ws,f_result, bound, alpha, lamb, beta, L_C)
+    preWrite(rowNumber, ws, bound, alpha, lamb, beta, 0)
+
     start_time = time.time()
 
-    U, V, numNeighbors, steps = kNN_Utils.RskNN(list_index, alpha, 0.001, 0.001, 0.001, 0.1,U, V, L_C, R, SG)
-
+    U_gdOld, V_gdOld, steps = OlderAlgo.social_regular(R_trian, U, V, SG, alpha, lamb, beta)
     time_exp = (time.time() - start_time) / 60
-    afterWrite(ws,f_result, validation_index, R, time_exp, numNeighbors, steps)
+    afterWrite(ws, R_test, time_exp, 0, steps, U_gdOld, V_gdOld)
+
     print '******************* FINISH SGD_kNN *******************'
 
-def gdOld(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SG):
+def FR(bound, alpha, lamb, beta, U, V, R_train, R_test, SG):
     global rowNumber
     global ws
+    global userNumber
     print '******************* SGD_kNN BEGIN *******************'
 
     rowNumber = rowNumber + 1
-    preWrite(rowNumber, ws,f_result, bound, alpha, lamb, beta, 0)
+    preWrite(rowNumber, ws, bound, alpha, lamb, beta, 0)
 
     start_time = time.time()
 
-    U, V, steps = OlderAlgo.gd_default(R, U, V, SG, alpha, lamb, beta, list_index)
+    U_FR, V_FR, steps = FriendsRegular.FR(R_train, alpha, 0.001, 0.001, 0.001, 0.1, U, V, SG, userNumber)
     time_exp = (time.time() - start_time) / 60
-    afterWrite(ws,f_result, validation_index, R, time_exp, 0, steps)
+    afterWrite(ws, R_test, time_exp, 0, steps,U_FR, V_FR)
 
     print '******************* FINISH SGD_kNN *******************'
 
-def FR(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SG):
-    global rowNumber
-    global ws
-    print '******************* SGD_kNN BEGIN *******************'
-
-    rowNumber = rowNumber + 1
-    preWrite(rowNumber, ws,f_result, bound, alpha, lamb, beta, 0)
-
-    start_time = time.time()
-
-    U, V, steps = FriendsRegular.FR(list_index, alpha, 0.001, 0.001, 0.001, 0.1, U, V, R, SG)
-    time_exp = (time.time() - start_time) / 60
-    afterWrite(ws,f_result, validation_index, R, time_exp, 0, steps)
-
-    print '******************* FINISH SGD_kNN *******************'
-
-def loadFile(isTraditionalFile, bound, R, social_network):
+def loadFile(R, social_network):
     global userNumber
     global itemNumber
-    if isTraditionalFile:
-        list_index, validation_index = Utilities.load_matrix_index(R, bound)
-    else:
-        list_index, validation_index, newR = Utilities.load_matrix_index_for_anotherDataSet_new(R, bound, userNumber)
-
-    if isTraditionalFile:
-        SG = Utilities.load_grafo_social(R, social_network)
-    else:
-        SG,SGS = Utilities.load_grafo_social_for_anotherDataSet(newR, social_network, userNumber, itemNumber)
-    return list_index, validation_index, newR, SG, SGS
+    kf = KFold(n_splits=5)
+    for train_index, test_index in kf.split(R):
+        R_trian, R_test = R[train_index], R[test_index]
+    SGS = Utilities.load_grafo_social_for_anotherDataSet(R, social_network, userNumber)
+    return R_trian, R_test,SGS
 
 def excelHelper(ws):
     ws.write(0, 0, 'rowNumber')
@@ -137,17 +142,17 @@ def excelHelper(ws):
     ws.write(0, 13, 'timeM')
 
 
-def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
+def exp(ExpName,R, U, V, SN_FILE):
     global ws
     global rowNumber
-    global f_result
     global userNumber
     global itemNumber
-
+    global expName
+    expName = ExpName
     userNumber = len(U)
     itemNumber = len(V)
 
-    Bound = [40,60,80]
+    Bound = [80]
     Alpha = [0.001]
     Lamb  = [0.01]
     Beta  = [0.001]
@@ -156,19 +161,18 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
     excelHelper(ws)
 
     for bound in Bound:
-        list_index, validation_index, newR, SG, SGS= loadFile(isTraditionalFile, bound, R, SN_FILE)
+        R_train, R_test, SGS= loadFile(R, SN_FILE)
         for alpha in Alpha:
             for lamb in Lamb:
                 for beta in Beta:
-                    gdOld(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SGS)
-                    FR(bound, alpha, lamb, beta, U, V, list_index, validation_index, R, SG)
+                    social_regularization(bound, alpha, lamb, beta, U, V, R_train, R_test, SGS)
+                    FR(bound, alpha, lamb, beta, U, V, R_train, R_test, SGS)
                     for L_C in L_CRatio:
-                        rskNN(bound, alpha, lamb, beta, U, V, L_C, list_index, validation_index, R, SG)
+                        rskNN(bound, alpha, lamb, beta, U, V, L_C, R_train, R_test, SGS)
                     print '******************* FINISH L_C *******************'
                 print '******************* FINISH Beta *******************'
             print '******************* FINISH Lamb *******************'
         print '******************* FINISH Alpha *******************'
-    f_result.close()
     wb.save('../resultSet/lastfm' + date+'.xls')
     print '******************* FINISH *******************'
 
@@ -177,16 +181,33 @@ def exp(exp_name, R, U, V, SN_FILE, isTraditionalFile):
 if __name__ == "__main__":
 
     '************************ EXP GD x GDRS ***************************'
-    global f_result
-    f_result = open('../resultSet/lastfm' + '_' + date, 'w')
-    R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
-    R = numpy.array(R)
-    U = random.uniform(0,0.01,size=(2200, 100))
-    V = random.uniform(0,0.01,size=(20000, 100))
-    SN_FILE = '../dataset/user_friends'
-    social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter='\t')
+    # # global f_result
+    # # f_result = open('../resultSet/lastfm' + '_' + date, 'w')
+    # # R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
+    # # R = numpy.array(R)
+    # R, U, V = dataProcessor.dataStatic("../dataset/user_artists",'\t')
+    # # U = random.uniform(0,0.01,size=(2200, 100))
+    # # V = random.uniform(0,0.01,size=(20000, 100))
+    # SN_FILE = '../dataset/user_friends'
+    # social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter='\t')
+    # #
+    # exp('lastfm', R, U, V, social_network)
 
-    exp('lastfm', R, U, V, social_network, False)
+    R, U, V = dataProcessor.dataStatic("../dataset/epinions/ratings_data",' ')
+    SN_FILE = '../dataset/epinions/trust_data'
+    social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=' ')
+    exp('epinions', R, U, V, social_network)
+
+    # global f_result
+    # f_result = open('../resultSet/lastfm' + '_' + date, 'w')
+    # R = numpy.loadtxt(open("../dataset/user_artists", "rb"), delimiter='\t')
+    # R = numpy.array(R)
+    # U = random.uniform(0,0.01,size=(2200, 100))
+    # V = random.uniform(0,0.01,size=(20000, 100))
+    # SN_FILE = '../dataset/user_friends'
+    # social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter='\t')
+    #
+    # exp('lastfm', R, U, V, social_network, False)
 
     # global f_result
     # f_result = open('../resultSet/Epinions' + '_' + date, 'w')
@@ -204,9 +225,9 @@ if __name__ == "__main__":
     # U = random.uniform(0,0.01,size=(1000, 100))
     # V = random.uniform(0,0.01,size=(70000, 100))
     # SN_FILE = '../dataset/hetrec2011-delicious-2k/user_contacts'
+
     #
     # exp('delicious', R, U, V, SN_FILE, False)
-
     # R = numpy.loadtxt(open("../dataset/NY_MATRIX","rb"),delimiter=",")
     # R = numpy.array(R)
     # U = numpy.loadtxt(open("../dataset/NY_U","rb"),delimiter=",")
