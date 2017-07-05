@@ -45,7 +45,7 @@ def FR(R, stepLength, lamb_phi, lamb_U, lamb_V, lamb_alpha, U, V, social_graph, 
         gdPhi = V.T[j].T * e + lamb_phi * res
         gdV = phi[i] * e + lamb_V * V.T[j].T
         gdU = - lamb_phi * res * alpha[i,i] + lamb_U * U[i]
-        Selse = numpy.zeros(len(U))
+        Selse = numpy.zeros(userNumber)
         for p in social_graph.getrow(i).nonzero():
             left = numpy.dot(U[p] ,(phi[i] - alpha[i,p] * U[p]).T)
             Selse[p] = left + Selse[p]

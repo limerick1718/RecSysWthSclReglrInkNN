@@ -1,7 +1,8 @@
 import numpy
 from scipy.sparse import csr_matrix
 from scipy.sparse import linalg as la
-
+from numpy import random
+from random import randint
 def dataStatic(path, Symbol):
     R = numpy.array(numpy.loadtxt(open(path, "rb"), delimiter=Symbol))
     userIndex = []
@@ -29,10 +30,11 @@ def dataStatic(path, Symbol):
     print maxUser
     print "maxItem"
     print maxItem
-
+    U = random.uniform(0,0.1,size=(maxUser + 1, 10))
+    V = random.uniform(0,0.1,size=(10, maxItem + 1))
     # demesion = userNumber + 1 \times itemNumber + 1
     # because 0 row 0 column is space
-    U,sigma,V = la.svds(newR, 10)
+    # U,sigma,V = la.svds(newR, 10)
     # U, V is +1 dimension
     # fileU = open('../dataset/hetrec2011-lastfm-2k/U', 'w')
     # fileU.write(U)
@@ -43,6 +45,7 @@ def dataStatic(path, Symbol):
     # fileR = open('../dataset/hetrec2011-lastfm-2k/R', 'w')
     # fileR.write(newR.toarray())
     # print R
+    print "******************dataProcess Finish***********************"
     return newR, U, V
 
 

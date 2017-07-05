@@ -192,8 +192,11 @@ def load_grafo_social_for_anotherDataSet(R, social_network, userNumber):
         PCC, meiyongde = scipy.stats.pearsonr(userItemsRating, friendsItemsRating)
 
         row.append(user)
+        print len(row)
         col.append(friend)
+        print len(col)
         data.append(PCC[0])
+        print len(data)
 
     social_graph_preSim = csr_matrix((data, (row, col)), shape=(userNumber, userNumber))
     print '*******************load social graph success************************'
