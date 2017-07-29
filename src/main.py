@@ -26,7 +26,7 @@ global itemNumber
 def fileWriter(values):
     global date
     global expName
-    f_result = open('F:/git/ml/RssrkNN/resultSet'+expName+date, 'a')
+    f_result = open('../resultSet/NY_SN'+expName+date, 'a')
     f_result.write( values + "\n")
     f_result.close()
 
@@ -69,11 +69,13 @@ def afterWrite(ws,R_test, time_exp, numNeighbors, steps, U, V):
     print('time_M  : ' + `time_M` + '\n')
     print ('steps :' + `steps` + '\n')
 
-def rskNN(alpha, lamb, beta, U, V, L_C, R_train, R_test, SG):
+def rskNN(alpha, lamb, beta, U, V, L_C, RTrain, RTest, SG):
     global rowNumber
     global ws
     global userNumber
     print '******************* SGD_kNN BEGIN *******************'
+    R_train = RTrain
+    R_test = RTest
     U_rs = U
     V_rs = V
     rowNumber = rowNumber + 1
@@ -86,10 +88,13 @@ def rskNN(alpha, lamb, beta, U, V, L_C, R_train, R_test, SG):
     afterWrite(ws,R_test, time_exp, numNeighbors, steps,U_KNN,V_KNN)
     print '******************* FINISH SGD_kNN *******************'
 
-def social_regularization(alpha, lamb, beta, U, V, R_trian, R_test, SG):
+def social_regularization(alpha, lamb, beta, U, V, RTrain, RTest, SG):
     global rowNumber
     global ws
     print '******************* SGD_kNN BEGIN *******************'
+    R_train = RTrain
+    R_test = RTest
+
     U_tempSR = U
     V_tempSR = V
     rowNumber = rowNumber + 1
@@ -97,17 +102,20 @@ def social_regularization(alpha, lamb, beta, U, V, R_trian, R_test, SG):
 
     start_time = time.time()
 
-    U_gdOld, V_gdOld, steps = OlderAlgo.social_regular(R_trian, U_tempSR, V_tempSR, SG, alpha, lamb, beta)
+    U_gdOld, V_gdOld, steps = OlderAlgo.social_regular(R_train, U_tempSR, V_tempSR, SG, alpha, lamb, beta)
     time_exp = (time.time() - start_time) / 60
     afterWrite(ws, R_test, time_exp, 0, steps, U_gdOld, V_gdOld)
 
     print '******************* FINISH SGD_kNN *******************'
 
-def FR(alpha, lamb, beta, U, V, R_train, R_test, SG):
+def FR(alpha, lamb, beta, U, V, RTrain, RTest, SG):
     global rowNumber
     global ws
     global userNumber
     print '******************* SGD_kNN BEGIN *******************'
+
+    R_train = RTrain
+    R_test = RTest
     U_FR = U
     V_FR = V
     rowNumber = rowNumber + 1
@@ -173,11 +181,15 @@ def exp(ExpName,R, U, V, SN_FILE):
 
     excelHelper(ws)
 
-    R_train, R_test, SGS= loadFile(R, SN_FILE)
+    RTrain, RTest, SGS= loadFile(R, SN_FILE)
+    R_train = RTrain
+    R_test = RTest
     for alpha in Alpha:
         for lamb in Lamb:
             for beta in Beta:
-                svd( R_train, R_test)
+                R_train1 = RTrain
+                R_test1 = RTest
+                svd( R_train1, R_test1)
                 social_regularization(alpha, lamb, beta, U, V, R_train, R_test, SGS)
                 FR(alpha, lamb, beta, U, V, R_train, R_test, SGS)
                 for L_C in L_CRatio:
@@ -205,11 +217,11 @@ if __name__ == "__main__":
     # social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter='\t')
     # #
     # exp('lastfm', R, U, V, social_network)
-
-    R, U, V = dataProcessor.dataStatic("../dataset/epinions/ratings_data",' ')
-    SN_FILE = '../dataset/epinions/trust_data'
-    social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=' ')
-    exp('epinions', R, U, V, social_network)
+    #
+    # R, U, V = dataProcessor.dataStatic("../dataset/epinions/ratings_data",' ')
+    # SN_FILE = '../dataset/epinions/trust_data'
+    # social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=' ')
+    # exp('epinions', R, U, V, social_network)
 
     # R, U, V = dataProcessor.dataStatic("../dataset/hetrec2011-lastfm-2k/user_artists", '\t')
     # SN_FILE = '../dataset/hetrec2011-lastfm-2k/user_friends'
@@ -248,11 +260,12 @@ if __name__ == "__main__":
     # exp('delicious', R, U, V, SN_FILE, False)
     # R = numpy.loadtxt(open("../dataset/NY_MATRIX","rb"),delimiter=",")
     # R = numpy.array(R)
-    # U = numpy.loadtxt(open("../dataset/NY_U","rb"),delimiter=",")
-    # V = numpy.loadtxt(open("../dataset/NY_V","rb"),delimiter=",")
-    # SN_FILE = '../dataset/NY_SN'
-    #
-    # exp('NY', R, U, V, SN_FILE, True)
+    R, U, V = dataProcessor.dataStatic("../dataset/NY_MATRIX", ',',False)
+    U = numpy.loadtxt(open("../dataset/NY_U","rb"),delimiter=",")
+    V = numpy.loadtxt(open("../dataset/NY_V","rb"),delimiter=",").T
+    SN_FILE = '../dataset/NY_SN'
+    social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=',')
+    exp('lastfm', R, U, V, social_network)
     #
     # R = numpy.loadtxt(open("../dataset/IL_MATRIX","rb"),delimiter=",")
     # R = numpy.array(R)

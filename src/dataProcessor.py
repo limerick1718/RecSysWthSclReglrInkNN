@@ -3,8 +3,11 @@ from scipy.sparse import csr_matrix
 from scipy.sparse import linalg as la
 from numpy import random
 from random import randint
-def dataStatic(path, Symbol):
+def dataStatic(path, Symbol, isSparseFile):
     R = numpy.array(numpy.loadtxt(open(path, "rb"), delimiter=Symbol))
+    if isSparseFile == False :
+        R  = csr_matrix(R)
+        return R, 0, 0
     userIndex = []
     itemIndex = []
     rankingScores = []

@@ -90,7 +90,7 @@ def RskNN(R, stepLength, lamb_phi, lamb_U, lamb_V, beta, U, V, L_C, social_graph
     Rmse = Utilities.rmse(R, U, V )
     round = 0
     exitFlag = False
-    phi = random.uniform(0,0.01,size=(userNumber, 10))
+    phi = random.uniform(0,0.01,size=(userNumber, 9))
     while True:
         if exitFlag == True:
             break

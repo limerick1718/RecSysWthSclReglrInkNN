@@ -22,7 +22,7 @@ def alphaGenerator(userNumber, social_graph):
 def FR(R, stepLength, lamb_phi, lamb_U, lamb_V, lamb_alpha, U, V, social_graph, userNumber):
     row, col = csr_matrix(R).nonzero()
     length = len(row)
-    phi = random.uniform(0, 0.01, size=(userNumber, 10))
+    phi = random.uniform(0, 0.01, size=(userNumber, 9))
     round = 0
     Rmse = Utilities.rmse(R, U, V)
     exitFlag = False
@@ -40,7 +40,8 @@ def FR(R, stepLength, lamb_phi, lamb_U, lamb_V, lamb_alpha, U, V, social_graph, 
         for p in social_graph.getrow(i).nonzero():
             phi_hat = alpha[i,p] * U[p] + phi_hat
 
-        e = numpy.dot(phi[i], V.T[j].T) - ratingScores
+        res= numpy.dot(phi[i], V.T[j].T)
+        e = res - ratingScores
         res = phi[i] - phi_hat
         gdPhi = V.T[j].T * e + lamb_phi * res
         gdV = phi[i] * e + lamb_V * V.T[j].T
