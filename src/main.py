@@ -265,7 +265,7 @@ if __name__ == "__main__":
     V = numpy.loadtxt(open("../dataset/NY_V","rb"),delimiter=",").T
     SN_FILE = '../dataset/NY_SN'
     social_network = numpy.loadtxt(open(SN_FILE, "rb"), delimiter=',')
-    exp('lastfm', R, U, V, social_network)
+    exp('NY_MATRIX', R, U, V, social_network)
     #
     # R = numpy.loadtxt(open("../dataset/IL_MATRIX","rb"),delimiter=",")
     # R = numpy.array(R)
